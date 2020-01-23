@@ -1,5 +1,6 @@
 package team.lf.uitasks.swipe
 
+import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +31,11 @@ class SwipeFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = swipeAdapter
         }
+        recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration(){
+            override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+                swipeController.onDraw(c)
+            }
+        })
         itemTouchHelper.attachToRecyclerView(recyclerView)
         return view
     }

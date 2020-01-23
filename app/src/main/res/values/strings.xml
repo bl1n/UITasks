@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">UITasks</string>
     <string name="swipe">Swipe</string>
-    <string name="SimplePaint">SimplePaint</string>
+    <string name="SimplePaint">Paint</string>
     <string name="Bubbles">Bubbles</string>
     <string name="id">ID:</string>
     <string name="name">NAME:</string>
