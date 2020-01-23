@@ -5,8 +5,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.util.Log
 import android.view.MotionEvent
-import android.widget.Button
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
 
@@ -15,7 +15,7 @@ enum class ButtonsState {
     RIGHT_VISIBLE,
 }
 
-class SwipeController : Callback() {
+class SwipeController(val actions:SwipeControllerActions) : Callback() {
 
     private var swipeBack: Boolean = false
     private var buttonShowedState = ButtonsState.GONE
@@ -58,6 +58,7 @@ class SwipeController : Callback() {
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
+        Log.d("TAG", "onChildDraw")
         var x = dX
         if (actionState == ACTION_STATE_SWIPE) {
             if (buttonShowedState != ButtonsState.GONE) {
@@ -100,6 +101,8 @@ class SwipeController : Callback() {
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
+        Log.d("TAG", "setTouchListener")
+
         recyclerView.setOnTouchListener { _, event ->
             swipeBack =
                 event.action == MotionEvent.ACTION_CANCEL ||
@@ -135,6 +138,14 @@ class SwipeController : Callback() {
         actionState: Int,
         currentlyActive: Boolean
     ) {
+        Log.d("TAG", "setTouchDownListener")
+
+
+        viewHolder.itemView.setOnTouchListener{v, event ->
+            Log.d("TAG", "${event.x}")
+            actions.onBlueButtonClicked(10)
+            return@setOnTouchListener true
+        }
         recyclerView.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 setTouchUpListener(
@@ -162,6 +173,7 @@ class SwipeController : Callback() {
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
+        Log.d("TAG", "setTouchUpListener")
         recyclerView.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 super@SwipeController.onChildDraw(
@@ -221,8 +233,8 @@ class SwipeController : Callback() {
 
     }
 
-    fun drawText(text: String, c: Canvas, button: RectF, p: Paint) {
-        val textSize: Float = 60f
+    private fun drawText(text: String, c: Canvas, button: RectF, p: Paint) {
+        val textSize = 60f
         p.isAntiAlias = true
         p.textSize = textSize
 

@@ -38,7 +38,12 @@ class SwipeAdapter : RecyclerView.Adapter<SwipeAdapter.SwipeItemViewHolder>() {
 
     companion object{
         fun populateUsers():List<User> =
-            listOf(User(1,"Donald"), User(2,"Tom"), User(3, "Jerry"), User(4, "Mickey"))
+            listOf(
+                User(1,"Donald"), User(2,"Tom"), User(3, "Jerry"), User(4, "Mickey"),
+                User(1,"Donald"), User(2,"Tom"), User(3, "Jerry"), User(4, "Mickey"),
+                User(1,"Donald"), User(2,"Tom"), User(3, "Jerry"), User(4, "Mickey"),
+                User(1,"Donald"), User(2,"Tom"), User(3, "Jerry"), User(4, "Mickey")
+            )
     }
 
 }
