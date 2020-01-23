@@ -1,7 +1,6 @@
 package team.lf.uitasks.swipe
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +18,6 @@ class SwipeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("TAG", "swipe fragment")
 
         swipeAdapter = SwipeAdapter()
         val view = inflater.inflate(R.layout.fragment_swipe, container, false)
@@ -32,7 +30,7 @@ class SwipeFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        swipeAdapter.addItems(SwipeAdapter.populateItems())
+        swipeAdapter.addItems(SwipeAdapter.populateUsers())
     }
 
     companion object {

@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import team.lf.uitasks.R
 import team.lf.uitasks.swipe.model.User
-import java.net.UnknownServiceException
 
 class SwipeAdapter : RecyclerView.Adapter<SwipeAdapter.SwipeItemViewHolder>() {
 
@@ -38,7 +37,7 @@ class SwipeAdapter : RecyclerView.Adapter<SwipeAdapter.SwipeItemViewHolder>() {
     }
 
     companion object{
-        fun populateItems():List<User> =
+        fun populateUsers():List<User> =
             listOf(User(1,"Donald"), User(2,"Tom"), User(3, "Jerry"), User(4, "Mickey"))
     }
 
