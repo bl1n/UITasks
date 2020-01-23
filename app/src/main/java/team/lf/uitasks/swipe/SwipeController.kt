@@ -140,12 +140,6 @@ class SwipeController(val actions:SwipeControllerActions) : Callback() {
     ) {
         Log.d("TAG", "setTouchDownListener")
 
-
-        viewHolder.itemView.setOnTouchListener{v, event ->
-            Log.d("TAG", "${event.x}")
-            actions.onBlueButtonClicked(10)
-            return@setOnTouchListener true
-        }
         recyclerView.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 setTouchUpListener(
