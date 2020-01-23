@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import team.lf.uitasks.R
@@ -20,11 +21,16 @@ class SwipeFragment : Fragment() {
     ): View? {
 
         swipeAdapter = SwipeAdapter()
+        val swipeController = SwipeController()
+        val itemTouchHelper = ItemTouchHelper(swipeController)
+
         val view = inflater.inflate(R.layout.fragment_swipe, container, false)
-        view.findViewById<RecyclerView>(R.id.recycler).apply {
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recycler)
+        recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = swipeAdapter
         }
+        itemTouchHelper.attachToRecyclerView(recyclerView)
         return view
     }
 
