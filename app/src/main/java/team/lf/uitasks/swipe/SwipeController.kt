@@ -15,8 +15,10 @@ enum class ButtonsState {
     RIGHT_VISIBLE,
 }
 
-class SwipeController(val actions:SwipeControllerActions) : Callback() {
+class SwipeController(val actions: SwipeControllerActions) : Callback() {
 
+
+    private val TAG = "TAG"
     private var swipeBack: Boolean = false
     private var buttonShowedState = ButtonsState.GONE
     private val buttonsWidth = 600f
@@ -58,7 +60,6 @@ class SwipeController(val actions:SwipeControllerActions) : Callback() {
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        Log.d("TAG", "onChildDraw")
         var x = dX
         if (actionState == ACTION_STATE_SWIPE) {
             if (buttonShowedState != ButtonsState.GONE) {
@@ -101,7 +102,6 @@ class SwipeController(val actions:SwipeControllerActions) : Callback() {
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        Log.d("TAG", "setTouchListener")
 
         recyclerView.setOnTouchListener { _, event ->
             swipeBack =
@@ -138,9 +138,11 @@ class SwipeController(val actions:SwipeControllerActions) : Callback() {
         actionState: Int,
         currentlyActive: Boolean
     ) {
-        Log.d("TAG", "setTouchDownListener")
 
-        recyclerView.setOnTouchListener { _, event ->
+        recyclerView.setOnTouchListener { v, event ->
+
+            setViewHolderOnClickListener(event, viewHolder)
+
             if (event.action == MotionEvent.ACTION_DOWN) {
                 setTouchUpListener(
                     c,
@@ -153,6 +155,31 @@ class SwipeController(val actions:SwipeControllerActions) : Callback() {
                 )
             }
             return@setOnTouchListener false
+        }
+
+    }
+
+    private fun setViewHolderOnClickListener(
+        event: MotionEvent,
+        viewHolder: RecyclerView.ViewHolder
+    ) {
+        val itemView = viewHolder.itemView
+        val top = itemView.top
+        val bottom = itemView.bottom
+        val right = itemView.right
+        val left = itemView.right -buttonsWidth
+
+//        Log.d(TAG, "Top $top")
+//        Log.d(TAG, "bottom $bottom")
+//        Log.d(TAG, "left $left")
+//        Log.d(TAG, "right $right")
+//        Log.d(TAG, "event.x ${event.x}")
+//        Log.d(TAG, "event.y ${event.y}")
+
+        if (event.x> left && event.x < right-buttonsWidth/2 && event.y> top && event.y < bottom){
+            actions.onRedButtonClicked(viewHolder.adapterPosition)
+        } else if ( event.x> left+buttonsWidth/2 && event.x < right && event.y> top && event.y < bottom){
+            actions.onBlueButtonClicked(viewHolder.adapterPosition)
         }
 
     }
