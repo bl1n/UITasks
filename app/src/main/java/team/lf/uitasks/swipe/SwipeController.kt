@@ -15,7 +15,7 @@ enum class ButtonsState {
     RIGHT_VISIBLE,
 }
 
-class SwipeController(val actions: SwipeControllerActions) : Callback() {
+class SwipeController(private val actions: SwipeControllerActions) : Callback() {
 
 
     private val TAG = "TAG"
@@ -194,7 +194,6 @@ class SwipeController(val actions: SwipeControllerActions) : Callback() {
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        Log.d("TAG", "setTouchUpListener")
         recyclerView.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 super@SwipeController.onChildDraw(

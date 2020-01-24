@@ -23,13 +23,21 @@ class SwipeFragment : Fragment() {
     ): View? {
 
         swipeAdapter = SwipeAdapter()
-        val swipeController = SwipeController(object : SwipeControllerActions{
+        val swipeController = SwipeController(object : SwipeControllerActions {
             override fun onRedButtonClicked(position: Int) {
-                Toast.makeText(context, "Red button clicked on $position position", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Red button is clicked on $position position",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             override fun onBlueButtonClicked(position: Int) {
-                Toast.makeText(context, "Blue button clicked on $position position", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Blue button is clicked on $position position",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
         })
@@ -41,7 +49,7 @@ class SwipeFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = swipeAdapter
         }
-        recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration(){
+        recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
                 swipeController.onDraw(c)
             }

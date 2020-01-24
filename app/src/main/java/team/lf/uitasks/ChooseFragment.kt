@@ -16,8 +16,6 @@ class ChooseFragment :Fragment(){
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        Log.d("TAG", "choose fragment1")
         val view = inflater.inflate(R.layout.fragment_choose, container, false)
         setButtons(view)
         return  view
