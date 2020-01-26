@@ -51,7 +51,6 @@ class PaintWithPaletteView @JvmOverloads constructor(
         val fifthColor =
             mainTypedArray.getColor(R.styleable.PaintWithPaletteView_fifthColor, Color.WHITE)
 
-
         inflate(context, R.layout.view_paint_with_palette, this)
         paintView = findViewById(R.id.paintView)
 

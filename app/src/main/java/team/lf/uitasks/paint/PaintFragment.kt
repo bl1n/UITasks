@@ -18,7 +18,6 @@ class PaintFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_paint, container, false)
 
         paintWithPaletteView = view.findViewById(R.id.paintWithPalette)
-
         return view
     }
 

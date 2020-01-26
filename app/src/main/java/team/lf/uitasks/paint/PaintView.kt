@@ -38,6 +38,7 @@ class PaintView @JvmOverloads constructor(
         strokeCap = Paint.Cap.ROUND
         strokeWidth = STROKE_WIDTH
     }
+
     private var path = Path()
 
     private val undoStack = Stack<Pair<Path, Paint>>()
