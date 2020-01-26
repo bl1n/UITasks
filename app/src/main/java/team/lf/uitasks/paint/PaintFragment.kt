@@ -22,7 +22,6 @@ class PaintFragment : Fragment() {
     }
 
     companion object {
-        // TODO: Customize parameter initialization
         @JvmStatic
         fun newInstance(): PaintFragment = PaintFragment()
     }
@@ -30,11 +29,9 @@ class PaintFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.undo -> {
-                Toast.makeText(context, "Undo", Toast.LENGTH_SHORT).show()
                 paintWithPaletteView.paintView.undoStep()
             }
             R.id.redo -> {
-                Toast.makeText(context, "Redo", Toast.LENGTH_SHORT).show()
                 paintWithPaletteView.paintView.redoStep()
 
             }

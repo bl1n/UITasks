@@ -1,18 +1,18 @@
 package team.lf.uitasks.paint
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
-import androidx.core.content.res.ResourcesCompat
-import team.lf.uitasks.R
 import java.util.*
 import kotlin.math.abs
 
 private const val STROKE_WIDTH = 12f
+private const val BACKGROUND_COLOR = Color.WHITE
+private const val INIT_DRAW_COLOR = Color.BLACK
 
 class PaintView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -24,13 +24,12 @@ class PaintView @JvmOverloads constructor(
     private var currentX = 0f
     private var currentY = 0f
 
-    lateinit var extraCanvas: Canvas
-    lateinit var extraBitmap: Bitmap
+    private lateinit var extraCanvas: Canvas
+    private lateinit var extraBitmap: Bitmap
 
-    private val backgroundColor = Color.WHITE
-    private val drawColor = ResourcesCompat.getColor(resources, R.color.colorPaint, null)
+
     private val paint = Paint().apply {
-        color = drawColor
+        color = INIT_DRAW_COLOR
         isAntiAlias = true
         isDither = true
         style = Paint.Style.STROKE
@@ -41,15 +40,14 @@ class PaintView @JvmOverloads constructor(
 
     private var path = Path()
 
-    private val undoStack = Stack<Pair<Path, Paint>>()
-    private val redoStack = Stack<Pair<Path, Paint>>()
-
+    private val undoStack = Stack<Pair<Path, Int>>()
+    private val redoStack = Stack<Pair<Path, Int>>()
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         if (::extraBitmap.isInitialized) extraBitmap.recycle()
         extraBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         extraCanvas = Canvas(extraBitmap)
-        extraCanvas.drawColor(backgroundColor)
+        extraCanvas.drawColor(BACKGROUND_COLOR)
         super.onSizeChanged(w, h, oldw, oldh)
     }
 
@@ -58,6 +56,7 @@ class PaintView @JvmOverloads constructor(
         canvas.drawBitmap(extraBitmap, 0f, 0f, null)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         motionTouchEventX = event.x
         motionTouchEventY = event.y
@@ -71,7 +70,7 @@ class PaintView @JvmOverloads constructor(
     }
 
     private fun touchStart() {
-        path.reset()
+        path = Path()
         path.moveTo(motionTouchEventX, motionTouchEventY)
         currentX = motionTouchEventX
         currentY = motionTouchEventY
@@ -95,16 +94,15 @@ class PaintView @JvmOverloads constructor(
     }
 
     private fun touchUp() {
-        undoStack.push(path to paint)
+        undoStack.push(path to paint.color)
         redoStack.clear()
-        path.reset()
     }
 
     private fun drawUndoStack() {
-        extraCanvas.drawBitmap(extraBitmap, 0f, 0f, null)
-        Log.d("TAG", "undo ${undoStack.size} redo ${redoStack.size}")
-        for (i in undoStack) {
-            extraCanvas.drawPath(i.first, i.second)
+        extraCanvas.drawColor(BACKGROUND_COLOR)
+        undoStack.forEach {
+            paint.color = it.second
+            extraCanvas.drawPath(it.first, paint)
         }
     }
 
@@ -113,7 +111,6 @@ class PaintView @JvmOverloads constructor(
             redoStack.push(undoStack.pop())
             drawUndoStack()
             invalidate()
-            requestLayout()
         }
     }
 
@@ -122,21 +119,14 @@ class PaintView @JvmOverloads constructor(
             undoStack.push(redoStack.pop())
             drawUndoStack()
             invalidate()
-            requestLayout()
         }
-    }
-
-    fun isUndoStackEmpty(): Boolean {
-        return undoStack.empty()
-    }
-
-    fun isRedoStackEmpty(): Boolean {
-        return redoStack.empty()
     }
 
     fun setBrushColor(color: Int) {
         paint.color = color
     }
+
+
 
 
 }

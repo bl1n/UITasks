@@ -6,7 +6,6 @@ import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.res.ResourcesCompat.getColor
 import team.lf.uitasks.R
 
 class PaintWithPaletteView @JvmOverloads constructor(
@@ -19,12 +18,6 @@ class PaintWithPaletteView @JvmOverloads constructor(
     private var fourthColorImageView: ImageView
     private var fifthColorImageView: ImageView
 
-//    private var firstColor = getColor(resources, R.color.red, null)
-//    private var secondColor = getColor(resources, R.color.green, null)
-//    private var thirdColor = getColor(resources, R.color.blue, null)
-//    private var fourthColor = getColor(resources, R.color.black, null)
-//    private var fifthColor = getColor(resources, R.color.white, null)
-
     init {
         val mainTypedArray = context.theme.obtainStyledAttributes(
             attrs,
@@ -35,18 +28,14 @@ class PaintWithPaletteView @JvmOverloads constructor(
         val firstColor =
             mainTypedArray.getColor(R.styleable.PaintWithPaletteView_firstColor, Color.RED)
 
-
         val secondColor =
             mainTypedArray.getColor(R.styleable.PaintWithPaletteView_secondColor, Color.GREEN)
-
 
         val thirdColor =
             mainTypedArray.getColor(R.styleable.PaintWithPaletteView_thirdColor, Color.BLUE)
 
-
         val fourthColor =
             mainTypedArray.getColor(R.styleable.PaintWithPaletteView_fourthColor, Color.BLACK)
-
 
         val fifthColor =
             mainTypedArray.getColor(R.styleable.PaintWithPaletteView_fifthColor, Color.WHITE)
