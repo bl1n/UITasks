@@ -8,4 +8,7 @@
 
     <string name="paintContentDescription">Mini Paint is a simple line drawing app.
    Drag your fingers to draw. Rotate the phone to clear.</string>
+    <string name="undo">undo</string>
+    <string name="redo">redo</string>
+    <string name="paint">paint</string>
 </resources>

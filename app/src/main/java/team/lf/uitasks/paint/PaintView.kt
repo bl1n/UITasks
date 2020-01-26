@@ -1,10 +1,7 @@
 package team.lf.uitasks.paint
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -20,7 +17,6 @@ private const val STROKE_WIDTH = 12f
 class PaintView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
-
     private val touchTolerance = ViewConfiguration.get(context).scaledTouchSlop
 
     private var motionTouchEventX = 0f
@@ -31,7 +27,7 @@ class PaintView @JvmOverloads constructor(
     lateinit var extraCanvas: Canvas
     lateinit var extraBitmap: Bitmap
 
-    private val backgroundColor = ResourcesCompat.getColor(resources, R.color.colorBackground, null)
+    private val backgroundColor = Color.WHITE
     private val drawColor = ResourcesCompat.getColor(resources, R.color.colorPaint, null)
     private val paint = Paint().apply {
         color = drawColor
@@ -44,15 +40,15 @@ class PaintView @JvmOverloads constructor(
     }
     private var path = Path()
 
-    private val undoPathStack = Stack<Pair<Path, Paint>>()
-    private val redoPathStack = Stack<Pair<Path, Paint>>()
+    private val undoStack = Stack<Pair<Path, Paint>>()
+    private val redoStack = Stack<Pair<Path, Paint>>()
 
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        if (::extraBitmap.isInitialized) extraBitmap.recycle()
         extraBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         extraCanvas = Canvas(extraBitmap)
         extraCanvas.drawColor(backgroundColor)
-//        if (::extraBitmap.isInitialized) extraBitmap.recycle()
         super.onSizeChanged(w, h, oldw, oldh)
     }
 
@@ -92,27 +88,50 @@ class PaintView @JvmOverloads constructor(
             )
             currentX = motionTouchEventX
             currentY = motionTouchEventY
-            extraCanvas.drawPath(path,paint)
+            extraCanvas.drawPath(path, paint)
         }
         invalidate()
     }
 
-    private fun drawPathStack() {
-        for(i in undoPathStack){
+    private fun touchUp() {
+        undoStack.push(path to paint)
+        redoStack.clear()
+        path.reset()
+    }
+
+    private fun drawUndoStack() {
+        extraCanvas.drawBitmap(extraBitmap, 0f, 0f, null)
+        Log.d("TAG", "undo ${undoStack.size} redo ${redoStack.size}")
+        for (i in undoStack) {
             extraCanvas.drawPath(i.first, i.second)
         }
-
     }
 
-    private fun touchUp() {
-//        undoPathStack.push(path to paint)
-//        drawPathStack()
-
-        path.reset()
-        Log.d("TAG", "stack size ${undoPathStack.size}")
+    fun undoStep() {
+        if (undoStack.size > 0) {
+            redoStack.push(undoStack.pop())
+            drawUndoStack()
+            invalidate()
+            requestLayout()
+        }
     }
 
+    fun redoStep() {
+        if (redoStack.size > 0) {
+            undoStack.push(redoStack.pop())
+            drawUndoStack()
+            invalidate()
+            requestLayout()
+        }
+    }
 
+    fun isUndoStackEmpty(): Boolean {
+        return undoStack.empty()
+    }
+
+    fun isRedoStackEmpty(): Boolean {
+        return redoStack.empty()
+    }
 
 
 }
