@@ -29,17 +29,17 @@ class PaintFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        when (item.itemId) {
-//            R.id.undo -> {
-//                Toast.makeText(context, "Undo", Toast.LENGTH_SHORT).show()
-//                paintView.undoStep()
-//            }
-//            R.id.redo -> {
-//                Toast.makeText(context, "Redo", Toast.LENGTH_SHORT).show()
-//                paintView.redoStep()
-//
-//            }
-//        }
+        when (item.itemId) {
+            R.id.undo -> {
+                Toast.makeText(context, "Undo", Toast.LENGTH_SHORT).show()
+                paintWithPaletteView.paintView.undoStep()
+            }
+            R.id.redo -> {
+                Toast.makeText(context, "Redo", Toast.LENGTH_SHORT).show()
+                paintWithPaletteView.paintView.redoStep()
+
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
 

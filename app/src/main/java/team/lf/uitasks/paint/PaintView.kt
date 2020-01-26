@@ -133,5 +133,9 @@ class PaintView @JvmOverloads constructor(
         return redoStack.empty()
     }
 
+    fun setBrushColor(color: Int) {
+        paint.color = color
+    }
+
 
 }

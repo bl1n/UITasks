@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PaintWithPaletteView">
+        <attr name="firstColor" format="reference"/>
+        <attr name="secondColor" format="reference"/>
+        <attr name="thirdColor" format="reference"/>
+        <attr name="fourthColor" format="reference"/>
+        <attr name="fifthColor" format="reference"/>
+    </declare-styleable>
+</resources>
