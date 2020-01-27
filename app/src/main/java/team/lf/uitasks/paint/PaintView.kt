@@ -11,7 +11,7 @@ import java.util.*
 import kotlin.math.abs
 
 private const val STROKE_WIDTH = 12f
-private const val BACKGROUND_COLOR = Color.WHITE
+const val BACKGROUND_COLOR = Color.WHITE
 private const val INIT_DRAW_COLOR = Color.BLACK
 
 class PaintView @JvmOverloads constructor(
