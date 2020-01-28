@@ -1,14 +1,18 @@
 package team.lf.uitasks.bubbles
 
+import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.animation.addPauseListener
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import team.lf.uitasks.R
@@ -36,8 +40,8 @@ class BubblesFragment : Fragment() {
         displayMetrics = DisplayMetrics()
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
         val root = inflater.inflate(R.layout.fragment_bubbles, container, false)
-        val rootWidth = (displayMetrics.widthPixels * displayMetrics.density + 0.5f)
-        val rootHeight = (displayMetrics.heightPixels * displayMetrics.density + 0.5f)
+        val rootWidth = displayMetrics.widthPixels
+        val rootHeight = displayMetrics.heightPixels
         val ivWidth = (displayMetrics.density * IMAGE_VIEW_WIDTH_IN_DP + 0.5f).toInt()
         val ivHeight = (displayMetrics.density * IMAGE_VIEW_HEIGHT_IN_DP + 0.5f).toInt()
         (root as ConstraintLayout).addImageView(ivWidth, ivHeight, rootWidth, rootHeight)
@@ -53,8 +57,8 @@ class BubblesFragment : Fragment() {
 private fun ConstraintLayout.addImageView(
     ivWidth: Int,
     ivHeight: Int,
-    rootWidth: Float,
-    rootHeight: Float
+    rootWidth: Int,
+    rootHeight: Int
 ) {
 
     val imageView = ImageView(context).apply {
@@ -67,18 +71,35 @@ private fun ConstraintLayout.addImageView(
         )
         layoutParams = ViewGroup.LayoutParams(ivWidth, ivHeight)
     }
+    imageView.setOnClickListener {
+        it.animation
+    }
     imageView.setAnimator(rootWidth, rootHeight, ivWidth, ivHeight)
     addView(imageView)
 }
 
+@SuppressLint("ClickableViewAccessibility")
 private fun ImageView.setAnimator(
-    rootWidth: Float,
-    rootHeight: Float,
+    rootWidth: Int,
+    rootHeight: Int,
     ivWidth: Int,
     ivHeight: Int
 ) {
-
     Log.d("TAG", "$rootHeight $rootWidth $ivHeight $ivWidth")
-        val animator = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, (rootWidth-ivWidth/2))
-        animator.start()
+    val animatorX =
+        ObjectAnimator.ofFloat(this, View.TRANSLATION_X, (rootWidth - ivWidth).toFloat())
+    val animatorY =
+        ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, (rootHeight - ivHeight).toFloat())
+    val animatorSet = AnimatorSet()
+    animatorSet.playTogether(animatorX, animatorY)
+    animatorSet.duration = 10000
+    animatorSet.start()
+
+    this.setOnTouchListener { _, event ->
+        when(event.action){
+            MotionEvent.ACTION_DOWN -> animatorSet.pause()
+            MotionEvent.ACTION_UP -> animatorSet.start()
+        }
+        true
+    }
 }
