@@ -4,18 +4,19 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import kotlinx.android.synthetic.main.fragment_bubbles.*
 import team.lf.uitasks.R
 import kotlin.random.Random
 
@@ -37,8 +38,10 @@ class BubblesFragment : Fragment() {
         @JvmStatic
         fun newInstance(): BubblesFragment = BubblesFragment()
     }
+
     private var countOfTouched = 0
 
+    private lateinit var timer: CountDownTimer
     private lateinit var listOfX: List<Int>
     private lateinit var listOfY: List<Int>
 
@@ -51,27 +54,43 @@ class BubblesFragment : Fragment() {
 
         val displayMetrics = DisplayMetrics()
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-
-        val rootWidth = displayMetrics.widthPixels
-        val rootHeight = displayMetrics.heightPixels
         val ivWidth = (displayMetrics.density * BUBBLE_WIDTH_IN_DP + 0.5f).toInt()
         val ivHeight = (displayMetrics.density * BUBBLE_HEIGHT_IN_DP + 0.5f).toInt()
+        val rootWidth = displayMetrics.widthPixels
+        val rootHeight = displayMetrics.heightPixels - 200
 
-        listOfX = listOf(0, rootWidth / 2, rootWidth)
-        listOfY = listOf(0, rootHeight / 2, rootHeight)
+        listOfX = listOf(0, rootWidth / 3, rootWidth / 2, rootWidth / 3 * 2, rootWidth)
+        listOfY = listOf(0, rootHeight / 3, rootHeight / 2, rootHeight / 3 * 2, rootHeight)
 
         for (i in 0 until NUMBER_OF_BUBBLES)
             addImageView((root as ConstraintLayout), ivWidth, ivHeight)
+
+        startCounter()
         return root
     }
 
+    private fun startCounter() {
+        timer = object : CountDownTimer((NUMBER_OF_BUBBLES * 2 * 1000).toLong(), 1000) {
+            override fun onFinish() {
+                startDialog("Время вышло!")
+            }
+
+            override fun onTick(millisUntilFinished: Long) {
+                counter.text = if (millisUntilFinished >= 1000) {
+                    millisUntilFinished.toInt().toString().subSequence(0, 1)
+                } else {
+                    "0"
+                }
+            }
+        }
+        timer.start()
+    }
+
     private fun checkBubbles(count: Int) {
-        if (count == NUMBER_OF_BUBBLES)
-            Toast.makeText(
-                context,
-                "CAUGHT!",
-                Toast.LENGTH_SHORT
-            ).show() //todo add dialog with("Success!")
+        if (count == NUMBER_OF_BUBBLES) {
+            timer.cancel()
+            startDialog("Success!")
+        }
     }
 
     private fun addImageView(
@@ -79,7 +98,6 @@ class BubblesFragment : Fragment() {
         ivWidth: Int,
         ivHeight: Int
     ) {
-
         val imageView = ImageView(constraintLayout.context).apply {
             setImageDrawable(
                 ResourcesCompat.getDrawable(
@@ -90,23 +108,23 @@ class BubblesFragment : Fragment() {
             )
             layoutParams = ViewGroup.LayoutParams(ivWidth, ivHeight)
         }
+
         imageView.setOnClickListener {
             it.animation
         }
-        setAnimator(imageView, listOfX, listOfY)
+        setAnimatorToIv(imageView)
         constraintLayout.addView(imageView)
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun setAnimator(
-        imageView: ImageView,
-        listOfX: List<Int>,
-        listOfY: List<Int>
+    private fun setAnimatorToIv(
+        imageView: ImageView
     ) {
 
-        val nextX = listOfX[Random.nextInt(listOfX.size)]
-        val nextY = listOfY[Random.nextInt(listOfY.size)]
-        Log.d("TAG", "$nextX $nextY ")
+        val ivWidth = imageView.layoutParams.width
+        val ivHeight = imageView.layoutParams.height
+        val nextX = listOfX[Random.nextInt(listOfX.size)] - ivWidth / 2
+        val nextY = listOfY[Random.nextInt(listOfY.size)] - ivHeight / 2
         val pvhX = PropertyValuesHolder.ofFloat(
             View.TRANSLATION_X,
             nextX.toFloat()
@@ -117,7 +135,7 @@ class BubblesFragment : Fragment() {
                 nextY.toFloat()
             )
         val animator = ObjectAnimator.ofPropertyValuesHolder(imageView, pvhX, pvhY)
-        animator.duration = 2000
+        animator.duration = Random.nextLong(1000, 2000)
 
         animator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(animation: Animator?) {
@@ -125,11 +143,10 @@ class BubblesFragment : Fragment() {
             }
 
             override fun onAnimationEnd(animation: Animator?) {
-                setAnimator(imageView, listOfX, listOfY)
+                setAnimatorToIv(imageView)
             }
 
             override fun onAnimationCancel(animation: Animator?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onAnimationStart(animation: Animator?) {
@@ -137,7 +154,7 @@ class BubblesFragment : Fragment() {
         })
         animator.start()
 
-        imageView.setOnTouchListener { v, event ->
+        imageView.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     animator.pause()
@@ -151,6 +168,20 @@ class BubblesFragment : Fragment() {
             }
             false
         }
+    }
+
+    fun startDialog(string: String) {
+        val builderDialog = AlertDialog.Builder(requireActivity())
+        builderDialog.setTitle(string)
+        builderDialog.setPositiveButton("Повторим!") { dialog, which ->
+            startCounter()
+            dialog.cancel()
+        }
+        builderDialog.setNegativeButton("Больше не хочу!") { dialog, which ->
+            requireActivity().onBackPressed()
+            dialog.cancel()
+        }
+        builderDialog.create().show()
     }
 
 }
