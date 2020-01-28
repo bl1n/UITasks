@@ -8,6 +8,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -121,6 +122,7 @@ class BubblesFragment : Fragment() {
         imageView: ImageView
     ) {
 
+        Log.d("TAG", "setAnimatorToIv")
         val ivWidth = imageView.layoutParams.width
         val ivHeight = imageView.layoutParams.height
         val nextX = listOfX[Random.nextInt(listOfX.size)] - ivWidth / 2
@@ -182,6 +184,11 @@ class BubblesFragment : Fragment() {
             dialog.cancel()
         }
         builderDialog.create().show()
+    }
+
+    override fun onDetach() {
+        timer.cancel()
+        super.onDetach()
     }
 
 }
