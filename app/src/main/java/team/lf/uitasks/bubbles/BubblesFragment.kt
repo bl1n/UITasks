@@ -1,21 +1,22 @@
 package team.lf.uitasks.bubbles
 
+import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.annotation.SuppressLint
+import android.graphics.Point
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.addPauseListener
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import team.lf.uitasks.R
+import kotlin.random.Random
 
 /**
  * 3) Игра пузырьки. На экране рисуется от 3 до 10 окружностей.
@@ -40,11 +41,11 @@ class BubblesFragment : Fragment() {
         displayMetrics = DisplayMetrics()
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
         val root = inflater.inflate(R.layout.fragment_bubbles, container, false)
-        val rootWidth = displayMetrics.widthPixels
+        val rootWidth = displayMetrics.widthPixels /displayMetrics.density
         val rootHeight = displayMetrics.heightPixels
         val ivWidth = (displayMetrics.density * IMAGE_VIEW_WIDTH_IN_DP + 0.5f).toInt()
         val ivHeight = (displayMetrics.density * IMAGE_VIEW_HEIGHT_IN_DP + 0.5f).toInt()
-        (root as ConstraintLayout).addImageView(ivWidth, ivHeight, rootWidth, rootHeight)
+        (root as ConstraintLayout).addImageView(ivWidth, ivHeight, rootWidth.toInt(), rootHeight)
         return root
     }
 
@@ -85,20 +86,36 @@ private fun ImageView.setAnimator(
     ivWidth: Int,
     ivHeight: Int
 ) {
-    Log.d("TAG", "$rootHeight $rootWidth $ivHeight $ivWidth")
-    val animatorX =
-        ObjectAnimator.ofFloat(this, View.TRANSLATION_X, (rootWidth - ivWidth).toFloat())
-    val animatorY =
-        ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, (rootHeight - ivHeight).toFloat())
-    val animatorSet = AnimatorSet()
-    animatorSet.playTogether(animatorX, animatorY)
-    animatorSet.duration = 10000
-    animatorSet.start()
+    Log.d("TAG", "$rootWidth $rootHeight $ivHeight $ivWidth")
+    val pvhX = PropertyValuesHolder.ofFloat(View.TRANSLATION_X, 0f, (rootWidth-ivWidth).toFloat())
+    val pvhY =
+        PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, (rootHeight - ivHeight).toFloat())
+    val animator = ObjectAnimator.ofPropertyValuesHolder(this, pvhX, pvhY)
+    animator.duration = 4000
 
-    this.setOnTouchListener { _, event ->
-        when(event.action){
-            MotionEvent.ACTION_DOWN -> animatorSet.pause()
-            MotionEvent.ACTION_UP -> animatorSet.start()
+    animator.addListener(object : Animator.AnimatorListener {
+        override fun onAnimationRepeat(animation: Animator?) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onAnimationEnd(animation: Animator?) {
+            this@setAnimator.setAnimator(rootWidth, rootHeight, ivWidth, ivHeight)
+        }
+
+        override fun onAnimationCancel(animation: Animator?) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onAnimationStart(animation: Animator?) {
+        }
+    })
+    animator.start()
+
+
+    this.setOnTouchListener { v, event ->
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> animator.pause()
+            MotionEvent.ACTION_UP -> animator.resume()
         }
         true
     }
