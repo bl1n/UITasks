@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_bubbles.*
 import team.lf.uitasks.R
+import kotlin.math.PI
 import kotlin.random.Random
 
 
@@ -36,6 +38,7 @@ class GeometryBubblesFragment : Fragment() {
     private var rootWidth: Int = 0
     private lateinit var timer: CountDownTimer
     private var numberOfBubbles = 0
+    private lateinit var listOfAngles: MutableList<Float>
 
     private var ivWidth = 0
     private var ivHeight = 0
@@ -48,6 +51,26 @@ class GeometryBubblesFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_bubbles, container, false)
         numberOfBubbles = Random.nextInt(1, 7)
 
+        initCorners()
+
+        populateListOfAngles()
+
+        addImView(root as ViewGroup)
+
+        startCounter()
+        return root
+    }
+
+    private fun populateListOfAngles() {
+        listOfAngles = mutableListOf()
+        for (i in 0..360 step 45) {
+            val angle = i* PI/180
+            Log.d("TAG", "$i $angle")
+            listOfAngles.add(angle.toFloat())
+        }
+    }
+
+    private fun initCorners() {
         val displayMetrics = DisplayMetrics()
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
         ivWidth = (displayMetrics.density * BUBBLE_WIDTH_IN_DP + 0.5f).toInt()
@@ -56,14 +79,9 @@ class GeometryBubblesFragment : Fragment() {
         rootHeight = displayMetrics.heightPixels - 200
 
         left = 0f
-        right= (rootWidth - ivWidth).toFloat()
+        right = (rootWidth - ivWidth).toFloat()
         top = 0f
         bottom = (rootHeight - ivHeight).toFloat()
-
-        addImView(root as ViewGroup)
-
-        startCounter()
-        return root
     }
 
     private fun addImView(root: ViewGroup) {
@@ -78,27 +96,37 @@ class GeometryBubblesFragment : Fragment() {
             layoutParams = ViewGroup.LayoutParams(ivWidth, ivHeight)
 
         }
-
-        root.addView(imageView)
         addAnimator(imageView)
+        root.addView(imageView)
     }
 
     private fun addAnimator(imageView: View) {
+
+        var currentX = right / 2
+        var currentY = bottom / 2
+
+
+//        var nextXY: Pair<Float, Float> = getNextXY(currentX, currentY)
+
         val pvhX = PropertyValuesHolder.ofFloat(
             View.TRANSLATION_X,
-            left
+            currentX, left
         )
 
         val pvhY =
             PropertyValuesHolder.ofFloat(
                 View.TRANSLATION_Y,
-                bottom
+                currentY, bottom
 
             )
         val animator = ObjectAnimator.ofPropertyValuesHolder(imageView, pvhX, pvhY)
         animator.duration = Random.nextLong(500, 2000)
         animator.start()
     }
+
+//    private fun getNextXY(currentX: Float, currentY: Float): Pair<Float, Float> {
+//
+//    }
 
     private fun startCounter() {
         timer = object : CountDownTimer((numberOfBubbles * 2 * 1000).toLong(), 1000) {
