@@ -137,7 +137,7 @@ class BubblesFragment : Fragment() {
                 nextY.toFloat()
             )
         val animator = ObjectAnimator.ofPropertyValuesHolder(imageView, pvhX, pvhY)
-        animator.duration = Random.nextLong(1000, 2000)
+        animator.duration = Random.nextLong(500, 2000)
 
         animator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(animation: Animator?) {
