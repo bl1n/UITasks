@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
@@ -31,20 +32,24 @@ import kotlin.random.Random
 
 const val BUBBLE_WIDTH_IN_DP = 100
 const val BUBBLE_HEIGHT_IN_DP = 100
-const val NUMBER_OF_BUBBLES = 3
 
 class BubblesFragment : Fragment() {
 
     companion object {
         @JvmStatic
         fun newInstance(): BubblesFragment = BubblesFragment()
+
+
     }
 
     private var countOfTouched = 0
 
+    private  var numberOfBubbles =0
     private lateinit var timer: CountDownTimer
     private lateinit var listOfX: List<Int>
     private lateinit var listOfY: List<Int>
+
+    private val listOfAnimators = mutableListOf<ObjectAnimator?>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,7 +57,7 @@ class BubblesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_bubbles, container, false)
-
+        numberOfBubbles =Random.nextInt(1,7)
         val displayMetrics = DisplayMetrics()
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
         val ivWidth = (displayMetrics.density * BUBBLE_WIDTH_IN_DP + 0.5f).toInt()
@@ -63,7 +68,7 @@ class BubblesFragment : Fragment() {
         listOfX = listOf(0+ivWidth/2, rootWidth / 3, rootWidth / 2, rootWidth / 3 * 2, rootWidth-ivWidth/2)
         listOfY = listOf(0+ivHeight/2, rootHeight / 3, rootHeight / 2, rootHeight / 3 * 2, rootHeight-ivHeight/2)
 
-        for (i in 0 until NUMBER_OF_BUBBLES)
+        for (i in 0 until numberOfBubbles)
             addImageView((root as ConstraintLayout), ivWidth, ivHeight)
 
         startCounter()
@@ -71,7 +76,7 @@ class BubblesFragment : Fragment() {
     }
 
     private fun startCounter() {
-        timer = object : CountDownTimer((NUMBER_OF_BUBBLES * 2 * 1000).toLong(), 1000) {
+        timer = object : CountDownTimer((numberOfBubbles * 2 * 1000).toLong(), 1000) {
             override fun onFinish() {
                 startDialog("Время вышло!")
             }
@@ -88,7 +93,7 @@ class BubblesFragment : Fragment() {
     }
 
     private fun checkBubbles(count: Int) {
-        if (count == NUMBER_OF_BUBBLES) {
+        if (count == numberOfBubbles) {
             timer.cancel()
             startDialog("Success!")
         }
@@ -138,7 +143,7 @@ class BubblesFragment : Fragment() {
             )
         val animator = ObjectAnimator.ofPropertyValuesHolder(imageView, pvhX, pvhY)
         animator.duration = Random.nextLong(500, 2000)
-
+        animator.interpolator = LinearInterpolator()
         animator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(animation: Animator?) {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -146,7 +151,6 @@ class BubblesFragment : Fragment() {
 
             override fun onAnimationEnd(animation: Animator?) {
                 setAnimatorToIv(imageView)
-                animation?.cancel()
             }
 
             override fun onAnimationCancel(animation: Animator?) {
@@ -156,6 +160,7 @@ class BubblesFragment : Fragment() {
             }
         })
         animator.start()
+        listOfAnimators.add(animator)
 
         imageView.setOnTouchListener { _, event ->
             when (event.action) {
@@ -187,10 +192,20 @@ class BubblesFragment : Fragment() {
         builderDialog.create().show()
     }
 
-    override fun onDetach() {
+    override fun onPause() {
+        super.onPause()
         timer.cancel()
-        super.onDetach()
+
+//        clearListOfAnimators()
     }
+//
+//    @Synchronized fun clearListOfAnimators(){
+//        for (i in listOfAnimators){
+//            i?.end()
+//        }
+//    }
+
+
 
 }
 
