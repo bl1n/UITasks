@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import team.lf.uitasks.bubbles.BubblesFragment
+import team.lf.uitasks.bubbles.GeometryBubblesFragment
 import team.lf.uitasks.paint.PaintFragment
 import team.lf.uitasks.swipe.SwipeFragment
 
@@ -38,7 +39,7 @@ class ChooseFragment :Fragment(){
         }
         view.findViewById<Button>(R.id.buttonBubbles).setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.container, BubblesFragment.newInstance())
+                .replace(R.id.container, GeometryBubblesFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
         }

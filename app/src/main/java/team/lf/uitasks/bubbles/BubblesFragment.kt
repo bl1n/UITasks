@@ -29,9 +29,8 @@ import kotlin.random.Random
  * Если палец на окружности она не двигается.
  * Если пользователь поставит палец, а затем уберет его с оружности то окружность снова начнет двигаться.
  * */
+//
 
-const val BUBBLE_WIDTH_IN_DP = 100
-const val BUBBLE_HEIGHT_IN_DP = 100
 
 class BubblesFragment : Fragment() {
 
@@ -39,7 +38,8 @@ class BubblesFragment : Fragment() {
         @JvmStatic
         fun newInstance(): BubblesFragment = BubblesFragment()
 
-
+        const val BUBBLE_WIDTH_IN_DP = 100
+        const val BUBBLE_HEIGHT_IN_DP = 100
     }
 
     private var countOfTouched = 0
