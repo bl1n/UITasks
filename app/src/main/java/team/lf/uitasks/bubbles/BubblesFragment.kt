@@ -60,8 +60,8 @@ class BubblesFragment : Fragment() {
         val rootWidth = displayMetrics.widthPixels
         val rootHeight = displayMetrics.heightPixels - 200
 
-        listOfX = listOf(0, rootWidth / 3, rootWidth / 2, rootWidth / 3 * 2, rootWidth)
-        listOfY = listOf(0, rootHeight / 3, rootHeight / 2, rootHeight / 3 * 2, rootHeight)
+        listOfX = listOf(0+ivWidth/2, rootWidth / 3, rootWidth / 2, rootWidth / 3 * 2, rootWidth-ivWidth/2)
+        listOfY = listOf(0+ivHeight/2, rootHeight / 3, rootHeight / 2, rootHeight / 3 * 2, rootHeight-ivHeight/2)
 
         for (i in 0 until NUMBER_OF_BUBBLES)
             addImageView((root as ConstraintLayout), ivWidth, ivHeight)
@@ -146,6 +146,7 @@ class BubblesFragment : Fragment() {
 
             override fun onAnimationEnd(animation: Animator?) {
                 setAnimatorToIv(imageView)
+                animation?.cancel()
             }
 
             override fun onAnimationCancel(animation: Animator?) {
