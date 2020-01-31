@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
@@ -27,10 +27,6 @@ class GeometryBubblesFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance(): GeometryBubblesFragment = GeometryBubblesFragment()
-
-        const val BUBBLE_WIDTH_IN_DP = 100
-        const val BUBBLE_HEIGHT_IN_DP = 100
-        const val SPEED = 30
     }
 
 
@@ -56,10 +52,19 @@ class GeometryBubblesFragment : Fragment() {
         initDimensions()
 
         populateListOfAngles()
-        addImageView(root as ViewGroup, ivWidth, ivHeight)
+
+        startGame(root as ViewGroup)
+//        addImageView(root as ViewGroup, ivWidth, ivHeight)
 //        addImageView(root as ViewGroup, ivWidth, ivHeight)
 
         return root
+    }
+
+    private fun startGame(root: ViewGroup) {
+        val numberOfBubbles = Random.nextInt(1, 7)
+        for (i in 1..numberOfBubbles) {
+            addImageView(root, ivWidth, ivHeight)
+        }
     }
 
     private fun initDimensions() {
@@ -112,45 +117,38 @@ class GeometryBubblesFragment : Fragment() {
         val timer = Timer()
         timerList.add(timer)
         var currentAngle = getAngle().toRad().toFloat()
-        view.x = Random.nextInt(0, right.toInt()).toFloat()
-        view.y = Random.nextInt(0, bottom.toInt()).toFloat()
-        val c = 50
+        view.x = Random.nextInt(0, (right - ivWidth).toInt()).toFloat()
+        view.y = Random.nextInt(0, (bottom - ivHeight).toInt()).toFloat()
+        val c = Random.nextInt(80, 150)
         var deltaX = c * cos(currentAngle)
         var deltaY = c * sin(currentAngle)
 
+
+        var task = MyTimerTask(view, deltaX, deltaY)
         timer.schedule(
-            object : TimerTask() {
-                override fun run() {
-                    Log.d("TAG", "x = ${view.x} y =  ${view.y}")
-//                    Log.d("TAG", "$deltaX, $deltaY")
-
-                    if (view.y >= bottom || view.y <= top) {
-                        deltaY = -deltaY
-                    }
-                    if (view.x <= left || view.x >= right) {
-                        deltaX = -deltaX
-                    }
-
-
-
-                    Handler(Looper.getMainLooper()).post {
-                        ObjectAnimator.ofPropertyValuesHolder(
-                            view,
-                            PropertyValuesHolder.ofFloat(View.X, view.x + deltaX),
-                            PropertyValuesHolder.ofFloat(View.Y, view.y + deltaY)
-                        ).apply {
-                            interpolator = LinearInterpolator()
-                            duration = 100
-                        }
-                            .start()
-                    }
-
-                }
-            },
+            task,
             0,
             100
         )
 
+        view.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    deltaX = task.deltaX
+                    deltaY = task.deltaY
+                    task.cancel()
+                }
+                MotionEvent.ACTION_UP -> {
+                    task = MyTimerTask(view, deltaX, deltaY)
+                    timer.schedule(
+                        task,
+                        0,
+                        100
+                    )
+                }
+            }
+            false
+        }
     }
 
 
@@ -161,5 +159,38 @@ class GeometryBubblesFragment : Fragment() {
         }
     }
 
+    inner class MyTimerTask(
+        private val view: View,
+        var deltaX: Float,
+        var deltaY: Float
+    ) : TimerTask() {
+
+        override fun run() {
+            if (view.y + deltaY / 2 >= bottom || view.y + deltaY / 2 <= top) {
+                deltaY = -deltaY
+            }
+            if (view.x + deltaX / 2 <= left || view.x + deltaX / 2 >= right) {
+                deltaX = -deltaX
+            }
+            Handler(Looper.getMainLooper()).post {
+                val animator = ObjectAnimator.ofPropertyValuesHolder(
+                    view,
+                    PropertyValuesHolder.ofFloat(View.X, view.x + deltaX),
+                    PropertyValuesHolder.ofFloat(View.Y, view.y + deltaY)
+                ).apply {
+                    interpolator = LinearInterpolator()
+                    duration = 100
+                }
+                animator
+                    .start()
+
+
+            }
+        }
+    }
 }
+
+
+
+
 
