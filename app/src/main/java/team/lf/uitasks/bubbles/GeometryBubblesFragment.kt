@@ -15,7 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
-import android.widget.LinearLayout
+import android.widget.RelativeLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_bubbles.*
@@ -33,10 +34,11 @@ class GeometryBubblesFragment : Fragment() {
         @JvmStatic
         fun newInstance(): GeometryBubblesFragment = GeometryBubblesFragment()
 
-        const val TIMER_TICK_DURATION: Long = 50
+        const val TIMER_TICK_DURATION: Long = 100
     }
 
     private lateinit var countDownTimer: CountDownTimer
+    private lateinit var timer: Timer
     private var numberOfBubbles: Int = 0
     private var countOfTouched = 0
 
@@ -49,7 +51,6 @@ class GeometryBubblesFragment : Fragment() {
     private var ivWidth = 0f
     private var ivHeight = 0f
 
-    private var timerList = mutableListOf<Timer>()
     private var viewList = mutableListOf<ImageView>()
 
     private lateinit var root: ViewGroup
@@ -60,6 +61,7 @@ class GeometryBubblesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         root = inflater.inflate(R.layout.fragment_bubbles, container, false) as ViewGroup
+        timer = Timer()
         initDimensions()
         startGame()
         return root
@@ -67,7 +69,6 @@ class GeometryBubblesFragment : Fragment() {
 
     private fun startGame() {
         numberOfBubbles = Random.nextInt(1, 7)
-        Log.d("TAG", "$numberOfBubbles")
 
         viewList.forEach {
             root.removeView(it)
@@ -126,34 +127,29 @@ class GeometryBubblesFragment : Fragment() {
                     null
                 )
             )
-            layoutParams = LinearLayout.LayoutParams(ivWidth.toInt(), ivHeight.toInt())
-
         }
-
+        val layoutParams = RelativeLayout.LayoutParams(ivWidth.toInt(), ivHeight.toInt())
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
+        imageView.layoutParams = layoutParams
         imageView.setOnClickListener {
             it.animation
         }
         viewGroup.addView(imageView)
         viewList.add(imageView)
-        startTimer(imageView)
+        scheduleTimer(imageView)
     }
 
-    private fun startTimer(view: View) {
-        val timer = Timer()
-        timerList.add(timer)
+    private fun scheduleTimer(view: View) {
         val currentAngle = Random.nextInt(1, 360).toRad().toFloat()
-        view.x = 0f
-        view.y = 0f
         val c = Random.nextInt(80, 150)
         var deltaX = c * cos(currentAngle)
         var deltaY = c * sin(currentAngle)
-
 
         var task = MyTimerTask(view, deltaX, deltaY)
         timer.schedule(
             task,
             0,
-            100
+            TIMER_TICK_DURATION
         )
 
         view.setOnTouchListener { v, event ->
@@ -175,7 +171,7 @@ class GeometryBubblesFragment : Fragment() {
                     countOfTouched--
                 }
             }
-            false
+            true
         }
     }
 
@@ -205,21 +201,21 @@ class GeometryBubblesFragment : Fragment() {
 
         override fun run() {
             when {
-                view.y + deltaY / 2 >= bottom -> {
+                view.y + deltaY >= bottom -> {
                     deltaY = -deltaY
                 }
-                view.y + deltaY / 2 <= top -> {
+                view.y + deltaY <= top -> {
                     deltaY = -deltaY
                 }
-                view.x + deltaX / 2 <= left -> {
+                view.x + deltaX <= left -> {
                     deltaX = -deltaX
                 }
-                view.x + deltaX / 2 >= right -> {
+                view.x + deltaX >= right -> {
                     deltaX = -deltaX
                 }
             }
             Handler(Looper.getMainLooper()).post {
-                val animator = ObjectAnimator.ofPropertyValuesHolder(
+                ObjectAnimator.ofPropertyValuesHolder(
                     view,
                     PropertyValuesHolder.ofFloat(View.X, view.x + deltaX),
                     PropertyValuesHolder.ofFloat(View.Y, view.y + deltaY)
@@ -227,18 +223,16 @@ class GeometryBubblesFragment : Fragment() {
                     interpolator = LinearInterpolator()
                     duration = TIMER_TICK_DURATION
                 }
-                animator
                     .start()
 
             }
         }
 
     }
+
     override fun onPause() {
         countDownTimer.cancel()
-        timerList.forEach {
-            it.cancel()
-        }
+        timer.cancel()
         super.onPause()
 
     }
