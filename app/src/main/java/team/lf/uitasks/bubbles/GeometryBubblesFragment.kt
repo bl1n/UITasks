@@ -185,7 +185,6 @@ class GeometryBubblesFragment : Fragment() {
         builderDialog.setPositiveButton("Повторим!") { dialog, _ ->
             dialog.cancel()
             startGame()
-
         }
         builderDialog.setNegativeButton("Больше не хочу!") { dialog, _ ->
             countDownTimer.cancel()
