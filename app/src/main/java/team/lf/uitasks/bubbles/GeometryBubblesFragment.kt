@@ -39,6 +39,7 @@ class GeometryBubblesFragment : Fragment() {
 
     private lateinit var countTask: TimerTask
     private lateinit var timer: Timer
+
     private var numberOfBubbles: Int = 0
     private var countOfTouched = 0
 
@@ -46,8 +47,6 @@ class GeometryBubblesFragment : Fragment() {
     private var top: Float = 0f
     private var right: Float = 0f
     private var left: Float = 0f
-    private var rootHeight: Int = 0
-    private var rootWidth: Int = 0
     private var ivWidth = 0f
     private var ivHeight = 0f
 
@@ -71,6 +70,7 @@ class GeometryBubblesFragment : Fragment() {
 
     private fun startGame() {
         numberOfBubbles = Random.nextInt(1, 7)
+        countOfTouched = 0
         viewList.forEach {
             root.removeView(it)
         }
@@ -111,8 +111,8 @@ class GeometryBubblesFragment : Fragment() {
         requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
         ivWidth = resources.getDimension(R.dimen.width)
         ivHeight = resources.getDimension(R.dimen.height)
-        rootWidth = displayMetrics.widthPixels
-        rootHeight = displayMetrics.heightPixels - 200
+        val rootWidth = displayMetrics.widthPixels
+        val rootHeight = displayMetrics.heightPixels - 200
         right = rootWidth - ivWidth
         bottom = rootHeight - ivHeight
     }
@@ -205,6 +205,7 @@ class GeometryBubblesFragment : Fragment() {
     ) : TimerTask() {
 
         override fun run() {
+            Log.d("TAG", "run task")
             if (!isGameStopped) {
                 when {
                     view.y + deltaY >= bottom -> {
@@ -223,6 +224,8 @@ class GeometryBubblesFragment : Fragment() {
                 view.x += deltaX
                 view.y += deltaY
             }
+//            else
+//                this.cancel()
         }
     }
 
