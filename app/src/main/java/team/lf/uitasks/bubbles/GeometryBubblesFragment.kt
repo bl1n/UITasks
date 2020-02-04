@@ -34,10 +34,10 @@ class GeometryBubblesFragment : Fragment() {
         @JvmStatic
         fun newInstance(): GeometryBubblesFragment = GeometryBubblesFragment()
 
-        const val TIMER_TICK_DURATION: Long = 100
+        const val TIMER_TICK_DURATION: Long = 10
     }
 
-    private lateinit var countDownTimer: CountDownTimer
+    private lateinit var countTask: TimerTask
     private lateinit var timer: Timer
     private var numberOfBubbles: Int = 0
     private var countOfTouched = 0
@@ -55,6 +55,8 @@ class GeometryBubblesFragment : Fragment() {
 
     private lateinit var root: ViewGroup
 
+    private var isGameStopped = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,10 +71,10 @@ class GeometryBubblesFragment : Fragment() {
 
     private fun startGame() {
         numberOfBubbles = Random.nextInt(1, 7)
-
         viewList.forEach {
             root.removeView(it)
         }
+        isGameStopped = false
         for (i in 1..numberOfBubbles) {
             addImageView(root, ivWidth, ivHeight)
         }
@@ -81,26 +83,27 @@ class GeometryBubblesFragment : Fragment() {
 
     private fun checkBubbles(count: Int) {
         if (count == numberOfBubbles) {
-            countDownTimer.cancel()
+            countTask.cancel()
             startDialog("Ура!")
         }
     }
 
     private fun startCounter() {
-        countDownTimer = object : CountDownTimer((numberOfBubbles * 2 * 1000).toLong(), 1000) {
-            override fun onFinish() {
-                startDialog("Время вышло!")
-            }
-
-            override fun onTick(millisUntilFinished: Long) {
-                counter.text = if (millisUntilFinished >= 1000) {
-                    millisUntilFinished.toInt().toString().subSequence(0, 1)
-                } else {
-                    "0"
+        var seconds = numberOfBubbles * 2
+        countTask = object : TimerTask() {
+            override fun run() {
+                Handler(Looper.getMainLooper()).post {
+                    seconds--
+                    counter.text = seconds.toString()
+                    if (seconds == 0) {
+                        startDialog("Время вышло!")
+                        this.cancel()
+                    }
                 }
             }
         }
-        countDownTimer.start()
+        timer.schedule(countTask, 1000, 1000)
+
     }
 
     private fun initDimensions() {
@@ -141,7 +144,7 @@ class GeometryBubblesFragment : Fragment() {
 
     private fun scheduleTimer(view: View) {
         val currentAngle = Random.nextInt(1, 360).toRad().toFloat()
-        val c = Random.nextInt(80, 150)
+        val c = Random.nextInt(8, 15)
         var deltaX = c * cos(currentAngle)
         var deltaY = c * sin(currentAngle)
 
@@ -183,7 +186,7 @@ class GeometryBubblesFragment : Fragment() {
             startGame()
         }
         builderDialog.setNegativeButton("Больше не хочу!") { dialog, _ ->
-            countDownTimer.cancel()
+            countTask.cancel()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.container, ChooseFragment.newInstance())
                 .commit()
@@ -191,6 +194,8 @@ class GeometryBubblesFragment : Fragment() {
         }
             .setCancelable(false)
         builderDialog.create().show()
+        isGameStopped =true
+
     }
 
     inner class MyTimerTask(
@@ -200,41 +205,31 @@ class GeometryBubblesFragment : Fragment() {
     ) : TimerTask() {
 
         override fun run() {
-            when {
-                view.y + deltaY >= bottom -> {
-                    deltaY = -deltaY
+            if (!isGameStopped) {
+                when {
+                    view.y + deltaY >= bottom -> {
+                        deltaY = -deltaY
+                    }
+                    view.y + deltaY <= top -> {
+                        deltaY = -deltaY
+                    }
+                    view.x + deltaX <= left -> {
+                        deltaX = -deltaX
+                    }
+                    view.x + deltaX >= right -> {
+                        deltaX = -deltaX
+                    }
                 }
-                view.y + deltaY <= top -> {
-                    deltaY = -deltaY
-                }
-                view.x + deltaX <= left -> {
-                    deltaX = -deltaX
-                }
-                view.x + deltaX >= right -> {
-                    deltaX = -deltaX
-                }
-            }
-            Handler(Looper.getMainLooper()).post {
-                ObjectAnimator.ofPropertyValuesHolder(
-                    view,
-                    PropertyValuesHolder.ofFloat(View.X, view.x + deltaX),
-                    PropertyValuesHolder.ofFloat(View.Y, view.y + deltaY)
-                ).apply {
-                    interpolator = LinearInterpolator()
-                    duration = TIMER_TICK_DURATION
-                }
-                    .start()
-
+                view.x += deltaX
+                view.y += deltaY
             }
         }
-
     }
 
     override fun onPause() {
-        countDownTimer.cancel()
         timer.cancel()
+        countTask.cancel()
         super.onPause()
-
     }
 
     private fun Int.toRad() = this * PI / 180
