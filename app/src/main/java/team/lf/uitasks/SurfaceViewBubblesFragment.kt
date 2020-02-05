@@ -21,6 +21,8 @@ class SurfaceViewBubblesFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance(): SurfaceViewBubblesFragment = SurfaceViewBubblesFragment()
+
+        const val BUBBLE_RADIUS = 130f
     }
 
     private lateinit var gameView: GameView
@@ -52,11 +54,11 @@ class SurfaceViewBubblesFragment : Fragment() {
         private var isRunning: Boolean = false
         private var gameThread: Thread? = null
 
-        private lateinit var bubbleList: List<Bubble>
-        private lateinit var paint: Paint
+        private var bubbleList: List<Bubble>
+        private var paint = Paint()
 
         init {
-            paint = Paint().apply {
+            paint.apply {
                 color = Color.DKGRAY
                 isAntiAlias = true
                 isDither = true
@@ -86,7 +88,7 @@ class SurfaceViewBubblesFragment : Fragment() {
             val list = mutableListOf<Bubble>()
             val displayMetrics = DisplayMetrics()
             requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-            val bubbleRadius = 100f
+            val bubbleRadius = BUBBLE_RADIUS
             val rootWidth = displayMetrics.widthPixels
             val rootHeight = displayMetrics.heightPixels
             val leftEdge = 0f + bubbleRadius
@@ -147,6 +149,10 @@ class Bubble(
     var deltaY: Float,
     var radius:Float
 ) {
+    private var deltaXCache = 0f
+
+    private var deltaYCache = 0f
+
     fun addDeltas() {
         x += deltaX
         y += deltaY
@@ -159,6 +165,26 @@ class Bubble(
         if (y <= topEdge || y >= bottomEdge) {
             deltaY = -deltaY
         }
+    }
+
+    fun onPauseMotion(){
+        saveAndNullDeltas()
+    }
+
+    fun onResumeMotion(){
+        restoreDeltas()
+    }
+
+    private fun saveAndNullDeltas(){
+        deltaXCache = deltaX
+        deltaX = 0f
+        deltaYCache = deltaY
+        deltaY = 0f
+    }
+
+    private fun restoreDeltas(){
+        deltaX = deltaXCache
+        deltaY = deltaYCache
     }
 }
 
