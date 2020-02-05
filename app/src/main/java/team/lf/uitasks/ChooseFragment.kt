@@ -39,7 +39,7 @@ class ChooseFragment :Fragment(){
         }
         view.findViewById<Button>(R.id.buttonBubbles).setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.container, GeometryBubblesFragment.newInstance())
+                .replace(R.id.container, SurfaceViewBubblesFragment.newInstance())
                 .addToBackStack(null)
                 .commit()
         }
