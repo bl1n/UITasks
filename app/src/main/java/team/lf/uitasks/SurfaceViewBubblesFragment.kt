@@ -7,10 +7,8 @@ import android.graphics.Paint
 import android.os.Bundle
 import android.util.AttributeSet
 import android.util.DisplayMetrics
-import android.view.LayoutInflater
-import android.view.SurfaceView
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
 import kotlin.math.PI
 import kotlin.math.cos
@@ -57,14 +55,17 @@ class SurfaceViewBubblesFragment : Fragment() {
         private var bubbleList: List<Bubble>
         private var paint = Paint()
 
+        private var numberOfBubbles = 0
+
         init {
+            numberOfBubbles = Random.nextInt(1, 7)
             paint.apply {
                 color = Color.DKGRAY
                 isAntiAlias = true
                 isDither = true
                 style = Paint.Style.FILL
             }
-            bubbleList = getListOfBubbles(Random.nextInt(1, 7))
+            bubbleList = getListOfBubbles(numberOfBubbles)
         }
 
         override fun run() {
@@ -76,12 +77,60 @@ class SurfaceViewBubblesFragment : Fragment() {
                     canvas.drawColor(Color.BLUE)
                     bubbleList.forEach {
                         canvas.drawCircle(it.x, it.y, it.radius, paint)
-                        it.checkEdges()
-                        it.addDeltas()
+                        if (it.pointerId == null) {
+                            it.checkEdges()
+                            it.addDeltas()
+                        }
+
+
                     }
                     holder.unlockCanvasAndPost(canvas)
                 }
             }
+        }
+
+        override fun onTouchEvent(event: MotionEvent): Boolean {
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    Log.d("TAG", "${event.getPointerId(event.actionIndex)}")
+                    checkTouch(event)
+                }
+                MotionEvent.ACTION_POINTER_DOWN -> {
+                    Log.d("TAG", "${event.getPointerId(event.actionIndex)}")
+                    checkTouch(event)
+                }
+                MotionEvent.ACTION_MOVE->{
+                    Log.d("TAG", "${event.getPointerId(event.actionIndex)}")
+                }
+                MotionEvent.ACTION_POINTER_UP -> {
+                    Log.d("TAG", "${event.getPointerId(event.actionIndex)}")
+                    bubbleList.forEach {
+                        if (it.pointerId == event.getPointerId(event.actionIndex)) {
+                            it.pointerId = null
+                        }
+                    }
+                }
+                MotionEvent.ACTION_UP -> {
+                    Log.d("TAG", "${event.getPointerId(event.actionIndex)}")
+                    bubbleList.forEach {
+                        it.pointerId = null
+                    }
+                }
+
+            }
+
+            return false
+        }
+
+        private fun checkTouch(event: MotionEvent) {
+            bubbleList.forEach {
+                if ((event.x in (it.x - BUBBLE_RADIUS)..(it.x + BUBBLE_RADIUS)) && (event.y in (it.y - BUBBLE_RADIUS)..(it.y + BUBBLE_RADIUS))) {
+                    it.onPauseMotion(event.getPointerId(event.actionIndex))
+                    return
+                }
+
+            }
+
         }
 
         private fun getListOfBubbles(count: Int): List<Bubble> {
@@ -147,8 +196,10 @@ class Bubble(
     var y: Float,
     var deltaX: Float,
     var deltaY: Float,
-    var radius:Float
+    var radius: Float
 ) {
+    var pointerId: Int? = null
+
     private var deltaXCache = 0f
 
     private var deltaYCache = 0f
@@ -167,25 +218,14 @@ class Bubble(
         }
     }
 
-    fun onPauseMotion(){
-        saveAndNullDeltas()
+    fun onPauseMotion(index: Int) {
+        pointerId = index
     }
 
-    fun onResumeMotion(){
-        restoreDeltas()
+    fun onResumeMotion() {
     }
 
-    private fun saveAndNullDeltas(){
-        deltaXCache = deltaX
-        deltaX = 0f
-        deltaYCache = deltaY
-        deltaY = 0f
-    }
 
-    private fun restoreDeltas(){
-        deltaX = deltaXCache
-        deltaY = deltaYCache
-    }
 }
 
 private fun Int.toRad() = this * PI / 180
