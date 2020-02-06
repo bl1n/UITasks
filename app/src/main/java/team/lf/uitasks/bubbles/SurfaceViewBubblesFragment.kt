@@ -11,7 +11,6 @@ import android.os.CountDownTimer
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import team.lf.uitasks.ChooseFragment
 import team.lf.uitasks.R
@@ -60,13 +59,21 @@ class SurfaceViewBubblesFragment : Fragment() {
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     ) : SurfaceView(context, attrs, defStyleAttr), Runnable {
 
+        private var rootHeight: Int
+        private var rootWidth: Int
+        private var bottomEdge: Float
+        private var rightEdge: Float
+        private var topEdge: Float
+        private var leftEdge: Float
         private lateinit var timer: CountDownTimer
         private var isRunning: Boolean = false
         private var gameThread: Thread? = null
 
         private var bubbleList: List<Bubble> = emptyList()
+        private lateinit var counter: Counter
         private var paint = Paint()
-        var counter = 0
+
+        var isGameStopped = false
 
         init {
             paint.apply {
@@ -76,13 +83,33 @@ class SurfaceViewBubblesFragment : Fragment() {
                 style = Paint.Style.FILL
             }
 
+            val displayMetrics = DisplayMetrics()
+            requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+            rootWidth = displayMetrics.widthPixels
+            rootHeight = displayMetrics.heightPixels
+            leftEdge = 0f + BUBBLE_RADIUS
+            topEdge = 0f + BUBBLE_RADIUS
+            rightEdge = rootWidth - BUBBLE_RADIUS
+            val bottomNavBarHeight =
+                resources.getDimension(
+                    resources.getIdentifier(
+                        "navigation_bar_height",
+                        "dimen",
+                        "android"
+                    )
+                )
+            bottomEdge =
+                rootHeight - BUBBLE_RADIUS - bottomNavBarHeight
+
             startNewGame()
         }
 
+
         private fun startNewGame() {
             val numberOfBubbles = Random.nextInt(1, 8)
-            counter = numberOfBubbles * 2
+            counter = Counter(numberOfBubbles * 2)
             isRunning = true
+            isGameStopped = false
             bubbleList = getListOfBubbles(numberOfBubbles)
             resume()
 
@@ -92,8 +119,7 @@ class SurfaceViewBubblesFragment : Fragment() {
                 }
 
                 override fun onTick(millisUntilFinished: Long) {
-                    counter--
-                    showMessage(counter.toString())
+                    counter.nextSecond()
                 }
             }
             timer.start()
@@ -105,6 +131,13 @@ class SurfaceViewBubblesFragment : Fragment() {
                 if (holder.surface.isValid) {
                     canvas = holder.lockCanvas()
                     canvas.drawColor(Color.BLUE)
+                    canvas.drawText(
+                        counter.count.toString(),
+                        0f,
+                        BUBBLE_RADIUS,
+                        counter.paint
+                    )
+
                     bubbleList.forEach {
                         canvas.drawCircle(it.x, it.y, it.radius, paint)
                         if (it.pointerId == null) {
@@ -153,10 +186,6 @@ class SurfaceViewBubblesFragment : Fragment() {
             }
         }
 
-        private fun showMessage(string: String) {
-            Toast.makeText(requireActivity(), string, Toast.LENGTH_SHORT).show()
-        }
-
         private fun checkTouchEvent(eventX: Float, eventY: Float, actionId: Int) {
             bubbleList.forEach {
                 val distanceToX = eventX - it.x
@@ -179,6 +208,7 @@ class SurfaceViewBubblesFragment : Fragment() {
 
         private fun startDialog(string: String) {
             timer.cancel()
+            isGameStopped = true
             pause()
             val builderDialog = AlertDialog.Builder(requireActivity())
             builderDialog.setTitle(string)
@@ -201,24 +231,6 @@ class SurfaceViewBubblesFragment : Fragment() {
 
         private fun getListOfBubbles(count: Int): List<Bubble> {
             val list = mutableListOf<Bubble>()
-            val displayMetrics = DisplayMetrics()
-            requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
-            val rootWidth = displayMetrics.widthPixels
-            val rootHeight = displayMetrics.heightPixels
-            val leftEdge = 0f + BUBBLE_RADIUS
-            val topEdge = 0f + BUBBLE_RADIUS
-            val rightEdge = rootWidth - BUBBLE_RADIUS
-            val bottomNavBarHeight =
-                resources.getDimension(
-                    resources.getIdentifier(
-                        "navigation_bar_height",
-                        "dimen",
-                        "android"
-                    )
-                )
-            val bottomEdge =
-                rootHeight - BUBBLE_RADIUS - bottomNavBarHeight
-
             for (i in 0 until count) {
                 val x = Random.nextInt(leftEdge.toInt(), rightEdge.toInt()).toFloat()
                 val y = Random.nextInt(topEdge.toInt(), bottomEdge.toInt()).toFloat()
@@ -245,6 +257,11 @@ class SurfaceViewBubblesFragment : Fragment() {
         }
 
         fun pause() {
+            if(isGameStopped){
+                for (bubble in bubbleList) {
+                    bubble.pointerId = 99
+                }
+            }
             isRunning = false
             try {
                 gameThread?.join()
@@ -254,10 +271,10 @@ class SurfaceViewBubblesFragment : Fragment() {
         }
 
         fun resume() {
-//            resumeMotion()
             isRunning = true
             gameThread = Thread(this)
             gameThread?.start()
+
         }
 
         fun detach() {
@@ -266,42 +283,5 @@ class SurfaceViewBubblesFragment : Fragment() {
 
     }
 }
-
-class Bubble(
-    private var leftEdge: Float,
-    private var topEdge: Float,
-    private var rightEdge: Float,
-    private var bottomEdge: Float,
-    var x: Float,
-    var y: Float,
-    private var deltaX: Float,
-    private var deltaY: Float,
-    var radius: Float
-) {
-    var pointerId: Int? = null
-
-    fun addDeltas() {
-        x += deltaX
-        y += deltaY
-    }
-
-    fun checkEdges() {
-        if (x <= leftEdge || x >= rightEdge) {
-            deltaX = -deltaX
-        }
-        if (y <= topEdge || y >= bottomEdge) {
-            deltaY = -deltaY
-        }
-    }
-
-    fun onPauseMotion(index: Int) {
-        pointerId = index
-    }
-
-    fun onResumeMotion() {
-        pointerId = null
-    }
-
-}
-
 private fun Int.toRad() = this * PI / 180
+
