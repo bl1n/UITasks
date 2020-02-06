@@ -178,6 +178,7 @@ class SurfaceViewBubblesFragment : Fragment() {
         }
 
         private fun startDialog(string: String) {
+            timer.cancel()
             pause()
             val builderDialog = AlertDialog.Builder(requireActivity())
             builderDialog.setTitle(string)
@@ -244,7 +245,6 @@ class SurfaceViewBubblesFragment : Fragment() {
         }
 
         fun pause() {
-            timer.cancel()
             isRunning = false
             try {
                 gameThread?.join()
@@ -254,7 +254,7 @@ class SurfaceViewBubblesFragment : Fragment() {
         }
 
         fun resume() {
-            resumeMotion()
+//            resumeMotion()
             isRunning = true
             gameThread = Thread(this)
             gameThread?.start()
@@ -301,7 +301,6 @@ class Bubble(
     fun onResumeMotion() {
         pointerId = null
     }
-
 
 }
 
