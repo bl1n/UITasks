@@ -1,5 +1,7 @@
 package team.lf.uitasks
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -7,8 +9,8 @@ import android.graphics.Paint
 import android.os.Bundle
 import android.util.AttributeSet
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import kotlin.math.PI
 import kotlin.math.cos
@@ -49,6 +51,7 @@ class SurfaceViewBubblesFragment : Fragment() {
     ) : SurfaceView(context, attrs, defStyleAttr), Runnable {
 
 
+//        private var isGameStopped: Boolean = false
         private var isRunning: Boolean = false
         private var gameThread: Thread? = null
 
@@ -89,48 +92,80 @@ class SurfaceViewBubblesFragment : Fragment() {
             }
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         override fun onTouchEvent(event: MotionEvent): Boolean {
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
-                    Log.d("TAG", "${event.getPointerId(event.actionIndex)}")
-                    checkTouch(event)
+                    checkTouchEvent(event.x, event.y, event.actionIndex)
+                    checkWin()
                 }
                 MotionEvent.ACTION_POINTER_DOWN -> {
-                    Log.d("TAG", "${event.getPointerId(event.actionIndex)}")
-                    checkTouch(event)
+
+                    val x = event.getX(event.actionIndex)
+                    val y = event.getY(event.actionIndex)
+                    checkTouchEvent(x, y, event.getPointerId(event.actionIndex))
+                    checkWin()
                 }
-                MotionEvent.ACTION_MOVE->{
-                    Log.d("TAG", "${event.getPointerId(event.actionIndex)}")
-                }
+
                 MotionEvent.ACTION_POINTER_UP -> {
-                    Log.d("TAG", "${event.getPointerId(event.actionIndex)}")
                     bubbleList.forEach {
                         if (it.pointerId == event.getPointerId(event.actionIndex)) {
-                            it.pointerId = null
+                            it.onResumeMotion()
                         }
                     }
                 }
                 MotionEvent.ACTION_UP -> {
-                    Log.d("TAG", "${event.getPointerId(event.actionIndex)}")
-                    bubbleList.forEach {
-                        it.pointerId = null
-                    }
+                    resumeMotion()
                 }
 
             }
 
-            return false
+            return true
         }
 
-        private fun checkTouch(event: MotionEvent) {
+        private fun resumeMotion() {
             bubbleList.forEach {
-                if ((event.x in (it.x - BUBBLE_RADIUS)..(it.x + BUBBLE_RADIUS)) && (event.y in (it.y - BUBBLE_RADIUS)..(it.y + BUBBLE_RADIUS))) {
-                    it.onPauseMotion(event.getPointerId(event.actionIndex))
+                it.onResumeMotion()
+            }
+        }
+
+        private fun showMessage(string: String) {
+            Toast.makeText(requireActivity(), string, Toast.LENGTH_SHORT).show()
+        }
+
+        private fun checkTouchEvent(eventX: Float, eventY: Float, actionIndex: Int) {
+            bubbleList.forEach {
+                if ((eventX in (it.x - BUBBLE_RADIUS)..(it.x + BUBBLE_RADIUS)) && (eventY in (it.y - BUBBLE_RADIUS)..(it.y + BUBBLE_RADIUS))) {
+                    it.onPauseMotion(actionIndex)
                     return
                 }
-
             }
+        }
 
+        private fun checkWin() {
+            bubbleList.forEach {
+                if (it.pointerId == null) return
+            }
+            startDialog("Победа!")
+            isRunning = false
+        }
+
+        private fun startDialog(string: String) {
+            val builderDialog = AlertDialog.Builder(requireActivity())
+            builderDialog.setTitle(string)
+            builderDialog.setPositiveButton("Повторим!") { dialog, _ ->
+                dialog.cancel()
+                isRunning = true
+                bubbleList = getListOfBubbles(Random.nextInt(1, 7))
+            }
+            builderDialog.setNegativeButton("Больше не хочу!") { dialog, _ ->
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, ChooseFragment.newInstance())
+                    .commit()
+                dialog.cancel()
+            }
+                .setCancelable(false)
+            builderDialog.create().show()
         }
 
         private fun getListOfBubbles(count: Int): List<Bubble> {
@@ -180,6 +215,7 @@ class SurfaceViewBubblesFragment : Fragment() {
         }
 
         fun resume() {
+            resumeMotion()
             isRunning = true
             gameThread = Thread(this)
             gameThread?.start()
@@ -188,21 +224,17 @@ class SurfaceViewBubblesFragment : Fragment() {
 }
 
 class Bubble(
-    var leftEdge: Float,
-    var topEdge: Float,
-    var rightEdge: Float,
-    var bottomEdge: Float,
+    private var leftEdge: Float,
+    private var topEdge: Float,
+    private var rightEdge: Float,
+    private var bottomEdge: Float,
     var x: Float,
     var y: Float,
-    var deltaX: Float,
-    var deltaY: Float,
+    private var deltaX: Float,
+    private var deltaY: Float,
     var radius: Float
 ) {
     var pointerId: Int? = null
-
-    private var deltaXCache = 0f
-
-    private var deltaYCache = 0f
 
     fun addDeltas() {
         x += deltaX
@@ -223,6 +255,7 @@ class Bubble(
     }
 
     fun onResumeMotion() {
+        pointerId = null
     }
 
 
