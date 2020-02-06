@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import kotlin.math.PI
 import kotlin.math.cos
@@ -45,37 +46,49 @@ class SurfaceViewBubblesFragment : Fragment() {
         gameView.resume()
     }
 
+
     inner class GameView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     ) : SurfaceView(context, attrs, defStyleAttr), Runnable {
 
-
-//        private var isGameStopped: Boolean = false
         private var isRunning: Boolean = false
         private var gameThread: Thread? = null
 
-        private var bubbleList: List<Bubble>
+        private var bubbleList: List<Bubble> = emptyList()
         private var paint = Paint()
 
-        private var numberOfBubbles = 0
+        private var lastTime = System.currentTimeMillis()
+        private var countDown = 999
 
         init {
-            numberOfBubbles = Random.nextInt(1, 7)
             paint.apply {
                 color = Color.DKGRAY
                 isAntiAlias = true
                 isDither = true
                 style = Paint.Style.FILL
             }
+
+            startNewGame()
+        }
+
+        private fun startNewGame() {
+            val numberOfBubbles = Random.nextInt(1, 7)
+            countDown = numberOfBubbles * 2
+            isRunning = true
             bubbleList = getListOfBubbles(numberOfBubbles)
+            gameThread?.start()
         }
 
         override fun run() {
             var canvas: Canvas
             while (isRunning) {
                 if (holder.surface.isValid) {
+                    if(System.currentTimeMillis()-lastTime>1000){
+                        countDown--
+                        lastTime = System.currentTimeMillis()
+                        checkCounter(countDown)
+                    }
                     canvas = holder.lockCanvas()
-                    canvas.save()
                     canvas.drawColor(Color.BLUE)
                     bubbleList.forEach {
                         canvas.drawCircle(it.x, it.y, it.radius, paint)
@@ -87,6 +100,10 @@ class SurfaceViewBubblesFragment : Fragment() {
                     holder.unlockCanvasAndPost(canvas)
                 }
             }
+        }
+
+        private fun checkCounter(countDown: Int) {
+            showMessage("Врем вышло! $countDown")
         }
 
         @SuppressLint("ClickableViewAccessibility")
@@ -114,9 +131,7 @@ class SurfaceViewBubblesFragment : Fragment() {
                 MotionEvent.ACTION_UP -> {
                     resumeMotion()
                 }
-
             }
-
             return true
         }
 
@@ -126,13 +141,16 @@ class SurfaceViewBubblesFragment : Fragment() {
             }
         }
 
-//        private fun showMessage(string: String) {
-//            Toast.makeText(requireActivity(), string, Toast.LENGTH_SHORT).show()
-//        }
+        private fun showMessage(string: String) {
+            Toast.makeText(requireActivity(), string, Toast.LENGTH_SHORT).show()
+        }
 
         private fun checkTouchEvent(eventX: Float, eventY: Float, actionIndex: Int) {
             bubbleList.forEach {
-                if ((eventX in (it.x - BUBBLE_RADIUS)..(it.x + BUBBLE_RADIUS)) && (eventY in (it.y - BUBBLE_RADIUS)..(it.y + BUBBLE_RADIUS))) {
+                val distanceToX = eventX-it.x
+                val distanceToY = eventY-it.y
+                val isInside = (distanceToX*distanceToX)+distanceToY*distanceToY <= BUBBLE_RADIUS* BUBBLE_RADIUS
+                if(isInside){
                     it.onPauseMotion(actionIndex)
                     return
                 }
@@ -152,9 +170,7 @@ class SurfaceViewBubblesFragment : Fragment() {
             builderDialog.setTitle(string)
             builderDialog.setPositiveButton("Повторим!") { dialog, _ ->
                 dialog.cancel()
-                isRunning = true
-                bubbleList = getListOfBubbles(Random.nextInt(1, 7))
-                gameThread?.start()
+                startNewGame()
             }
             builderDialog.setNegativeButton("Больше не хочу!") { dialog, _ ->
                 requireActivity().supportFragmentManager.beginTransaction()
@@ -218,6 +234,7 @@ class SurfaceViewBubblesFragment : Fragment() {
             gameThread = Thread(this)
             gameThread?.start()
         }
+
     }
 }
 
