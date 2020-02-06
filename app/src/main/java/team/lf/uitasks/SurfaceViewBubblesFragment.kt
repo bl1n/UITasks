@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import kotlin.math.PI
 import kotlin.math.cos
@@ -84,8 +83,6 @@ class SurfaceViewBubblesFragment : Fragment() {
                             it.checkEdges()
                             it.addDeltas()
                         }
-
-
                     }
                     holder.unlockCanvasAndPost(canvas)
                 }
@@ -129,9 +126,9 @@ class SurfaceViewBubblesFragment : Fragment() {
             }
         }
 
-        private fun showMessage(string: String) {
-            Toast.makeText(requireActivity(), string, Toast.LENGTH_SHORT).show()
-        }
+//        private fun showMessage(string: String) {
+//            Toast.makeText(requireActivity(), string, Toast.LENGTH_SHORT).show()
+//        }
 
         private fun checkTouchEvent(eventX: Float, eventY: Float, actionIndex: Int) {
             bubbleList.forEach {
@@ -157,6 +154,7 @@ class SurfaceViewBubblesFragment : Fragment() {
                 dialog.cancel()
                 isRunning = true
                 bubbleList = getListOfBubbles(Random.nextInt(1, 7))
+                gameThread?.start()
             }
             builderDialog.setNegativeButton("Больше не хочу!") { dialog, _ ->
                 requireActivity().supportFragmentManager.beginTransaction()
