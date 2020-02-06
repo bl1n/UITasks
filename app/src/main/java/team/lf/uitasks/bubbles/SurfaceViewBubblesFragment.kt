@@ -1,4 +1,4 @@
-package team.lf.uitasks
+package team.lf.uitasks.bubbles
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -13,6 +13,8 @@ import android.util.DisplayMetrics
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import team.lf.uitasks.ChooseFragment
+import team.lf.uitasks.R
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -21,7 +23,8 @@ import kotlin.random.Random
 class SurfaceViewBubblesFragment : Fragment() {
     companion object {
         @JvmStatic
-        fun newInstance(): SurfaceViewBubblesFragment = SurfaceViewBubblesFragment()
+        fun newInstance(): SurfaceViewBubblesFragment =
+            SurfaceViewBubblesFragment()
 
         const val BUBBLE_RADIUS = 130f
     }
@@ -77,7 +80,7 @@ class SurfaceViewBubblesFragment : Fragment() {
         }
 
         private fun startNewGame() {
-            val numberOfBubbles = Random.nextInt(1, 7)
+            val numberOfBubbles = Random.nextInt(1, 8)
             counter = numberOfBubbles * 2
             isRunning = true
             bubbleList = getListOfBubbles(numberOfBubbles)
@@ -184,7 +187,10 @@ class SurfaceViewBubblesFragment : Fragment() {
             }
             builderDialog.setNegativeButton("Больше не хочу!") { dialog, _ ->
                 requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, ChooseFragment.newInstance())
+                    .replace(
+                        R.id.container,
+                        ChooseFragment.newInstance()
+                    )
                     .commit()
                 dialog.cancel()
             }
