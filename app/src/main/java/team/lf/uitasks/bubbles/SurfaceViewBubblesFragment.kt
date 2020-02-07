@@ -73,7 +73,7 @@ class SurfaceViewBubblesFragment : Fragment() {
         private lateinit var counter: Counter
         private var paint = Paint()
 
-        var isGameStopped = false
+        private var isGameStopped = false
 
         init {
             paint.apply {
@@ -217,12 +217,7 @@ class SurfaceViewBubblesFragment : Fragment() {
                 startNewGame()
             }
             builderDialog.setNegativeButton("Больше не хочу!") { dialog, _ ->
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(
-                        R.id.container,
-                        ChooseFragment.newInstance()
-                    )
-                    .commit()
+                requireActivity().onBackPressed()
                 dialog.cancel()
             }
                 .setCancelable(false)
