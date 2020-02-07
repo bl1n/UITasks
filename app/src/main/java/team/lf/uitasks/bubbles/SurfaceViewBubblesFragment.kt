@@ -115,7 +115,10 @@ class SurfaceViewBubblesFragment : Fragment() {
 
             timer = object : CountDownTimer((numberOfBubbles * 2 * 1000 - 1000).toLong(), 950) {
                 override fun onFinish() {
-                    startDialog("Время вышло!")
+                    if(!checkWin()){
+                        startDialog("Время вышло!")
+                    }
+
                 }
 
                 override fun onTick(millisUntilFinished: Long) {
@@ -156,14 +159,14 @@ class SurfaceViewBubblesFragment : Fragment() {
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
                     checkTouchEvent(event.x, event.y, event.actionIndex)
-                    checkWin()
+                    if(checkWin()) startDialog("Победа!")
                 }
                 MotionEvent.ACTION_POINTER_DOWN -> {
 
                     val x = event.getX(event.actionIndex)
                     val y = event.getY(event.actionIndex)
                     checkTouchEvent(x, y, event.getPointerId(event.actionIndex))
-                    checkWin()
+                    if(checkWin()) startDialog("Победа!")
                 }
 
                 MotionEvent.ACTION_POINTER_UP -> {
@@ -199,11 +202,11 @@ class SurfaceViewBubblesFragment : Fragment() {
             }
         }
 
-        private fun checkWin() {
+        private fun checkWin():Boolean {
             bubbleList.forEach {
-                if (it.pointerId == null) return
+                if (it.pointerId == null) return false
             }
-            startDialog("Победа!")
+            return true
         }
 
         private fun startDialog(string: String) {
