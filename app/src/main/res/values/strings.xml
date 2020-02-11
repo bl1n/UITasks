@@ -3,6 +3,7 @@
     <string name="swipe">Swipe</string>
     <string name="SimplePaint">Paint</string>
     <string name="Bubbles">Bubbles</string>
+    <string name="Gmail">Gmail</string>
     <string name="id">ID:</string>
     <string name="name">NAME:</string>
 
@@ -11,5 +12,6 @@
     <string name="redo">redo</string>
     <string name="paint">paint</string>
     <string name="todo">TODO</string>
+    <string name="click_me">Click me!</string>
 
 </resources>
