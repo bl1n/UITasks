@@ -35,8 +35,8 @@ class GmailFragment:Fragment() {
 
         view.findViewById<Button>(R.id.bottom_sheet_button)
             .setOnClickListener {
-                if(sheetBehavior.state == BottomSheetBehavior.STATE_HIDDEN){
-                    sheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+                if(sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED){
+                    sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 } else {
                     sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 }

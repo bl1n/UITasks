@@ -13,5 +13,6 @@
     <string name="paint">paint</string>
     <string name="todo">TODO</string>
     <string name="click_me">Click me!</string>
+    <string name="expand">Expand</string>
 
 </resources>
