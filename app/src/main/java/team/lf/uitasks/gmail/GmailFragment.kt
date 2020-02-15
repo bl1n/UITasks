@@ -5,9 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import team.lf.uitasks.R
 
 class GmailFragment:Fragment() {
@@ -26,20 +24,13 @@ class GmailFragment:Fragment() {
 
         val view = layoutInflater.inflate(R.layout.fragment_gmail, container,false)
 
-        val toolbar = view.findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
-        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
-
-        val bottomSheet  = view.findViewById<ViewGroup>(R.id.bottom_sheet)
-        val sheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         view.findViewById<Button>(R.id.bottom_sheet_button)
             .setOnClickListener {
-                if(sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED){
-                    sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                } else {
-                    sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                }
+                val fragment = ContactDetailsBottomSheetDialogFragment.newInstance()
+                fragment.apply {
+
+                }.show(requireActivity().supportFragmentManager, null)
             }
         return view
     }
