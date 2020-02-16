@@ -14,14 +14,12 @@
         android:layout_width="match_parent"
 
         android:layout_height="100dp"
-        android:alpha="0"
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:alpha="0"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:layout_scrollInterpolator="@android:anim/decelerate_interpolator"
@@ -31,12 +29,12 @@
                 android:id="@+id/app_bar_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:alpha="0"
 
                 android:scaleType="centerCrop"
                 android:src="@android:drawable/sym_def_app_icon" />
 
             <androidx.appcompat.widget.Toolbar
+                android:alpha="0"
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize">
@@ -49,6 +47,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:text="Hello!"/>
     </androidx.core.widget.NestedScrollView>
 
 
