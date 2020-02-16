@@ -11,13 +11,13 @@ class GmailActivity:AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.Theme_MaterialComponents_Light_NoActionBar)
+        setTheme(R.style.Theme_AppCompat_Light_NoActionBar)
         setContentView(R.layout.activity_gmail)
         findViewById<Button>(R.id.bottom_sheet_button)
             .setOnClickListener {
                 val fragment = ContactDetailsBottomSheetDialogFragment.newInstance()
                 fragment.apply {
-                    isCancelable = false
+
                 }.show(supportFragmentManager, null)
             }
     }
