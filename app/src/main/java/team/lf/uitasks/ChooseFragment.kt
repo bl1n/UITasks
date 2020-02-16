@@ -1,5 +1,6 @@
 package team.lf.uitasks
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import team.lf.uitasks.bubbles.SurfaceViewBubblesFragment
-import team.lf.uitasks.gmail.GmailFragment
+import team.lf.uitasks.gmail.GmailActivity
 import team.lf.uitasks.paint.PaintFragment
 import team.lf.uitasks.swipe.SwipeFragment
 
@@ -44,10 +45,7 @@ class ChooseFragment :Fragment(){
                 .commit()
         }
         view.findViewById<Button>(R.id.buttonGmail).setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.container, GmailFragment.newInstance())
-                .addToBackStack(null)
-                .commit()
+            startActivity(Intent(requireActivity(), GmailActivity::class.java))
         }
 
     }
