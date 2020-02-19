@@ -11,7 +11,7 @@
     app:behavior_peekHeight="550dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/avatarImageView"
         android:layout_width="@dimen/diameter"
         android:layout_height="@dimen/diameter"

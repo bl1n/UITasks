@@ -1,21 +1,23 @@
 package team.lf.uitasks.gmail
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Button
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import de.hdodenhof.circleimageview.CircleImageView
 import team.lf.uitasks.R
 
 class GmailActivity : AppCompatActivity() {
 
-    private lateinit var avatarImageView: CircleImageView
+    private lateinit var avatarImageView: ImageView
     private lateinit var hideableViewGroup: ViewGroup
     private lateinit var cardView: CardView
     private lateinit var bottomSheet: ConstraintLayout
@@ -35,6 +37,10 @@ class GmailActivity : AppCompatActivity() {
         val sheetBehavior = BottomSheetBehavior.from(bottomSheet)
         sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
+
+        setStatusBarColor(Color.GREEN)
+
+
         findViewById<Button>(R.id.bottom_sheet_button)
             .setOnClickListener {
                 if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
@@ -45,9 +51,10 @@ class GmailActivity : AppCompatActivity() {
 
         sheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                changeImage(slideOffset)
+                changeImageSize(slideOffset)
                 setButtonsVisibility(slideOffset)
                 moveCardView(slideOffset)
+
             }
 
             @SuppressLint("SwitchIntDef")
@@ -63,8 +70,8 @@ class GmailActivity : AppCompatActivity() {
 
     private fun moveCardView(slideOffset: Float) {
         val margin = when {
-            slideOffset in 0.1f .. 0.9f -> {
-                (resources.getDimensionPixelSize(R.dimen.card_margin_top)*(1-slideOffset)).toInt()
+            slideOffset in 0.1f..0.9f -> {
+                (resources.getDimensionPixelSize(R.dimen.card_margin_top) * (1 - slideOffset)).toInt()
             }
             slideOffset > 0.9f -> {
                 0
@@ -79,7 +86,6 @@ class GmailActivity : AppCompatActivity() {
         set.applyTo(bottomSheet)
     }
 
-    //todo change to alpha animation
     private fun setButtonsVisibility(slideOffset: Float) {
         if (slideOffset >= 0.5) {
             hideableViewGroup.visibility = View.GONE
@@ -89,7 +95,7 @@ class GmailActivity : AppCompatActivity() {
         }
     }
 
-    private fun changeImage(slideOffset: Float) {
+    private fun changeImageSize(slideOffset: Float) {
 
         val diameter = if (slideOffset in 0.1f..1f) {
             (resources.getDimensionPixelSize(R.dimen.diameter) / (slideOffset.toDouble() + 1)).toInt()
@@ -101,6 +107,12 @@ class GmailActivity : AppCompatActivity() {
         avatarImageView.requestLayout()
 
 
+    }
+
+    private fun setStatusBarColor(color:Int){
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = color
     }
 
 }
