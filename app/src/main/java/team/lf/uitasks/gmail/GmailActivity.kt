@@ -1,6 +1,7 @@
 package team.lf.uitasks.gmail
 
 import android.annotation.SuppressLint
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -37,15 +38,12 @@ class GmailActivity : AppCompatActivity() {
         val sheetBehavior = BottomSheetBehavior.from(bottomSheet)
         sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
-
-        setStatusBarColor(Color.GREEN)
-
-
         findViewById<Button>(R.id.bottom_sheet_button)
             .setOnClickListener {
                 if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                     sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                     shadowBox.visibility = View.VISIBLE
+                    window.statusBarColor = Color.DKGRAY
                 }
             }
 
@@ -54,7 +52,7 @@ class GmailActivity : AppCompatActivity() {
                 changeImageSize(slideOffset)
                 setButtonsVisibility(slideOffset)
                 moveCardView(slideOffset)
-
+                changeStatusBarColor(slideOffset)
             }
 
             @SuppressLint("SwitchIntDef")
@@ -62,10 +60,18 @@ class GmailActivity : AppCompatActivity() {
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         shadowBox.visibility = View.GONE
+                        window.statusBarColor = Color.BLUE //todo look for right color
                     }
                 }
             }
         })
+    }
+
+    private fun changeStatusBarColor(slideOffset: Float) {
+        when(slideOffset){
+            in 0.99f..1f-> setStatusBarColor(Color.WHITE)
+            else -> setStatusBarColor(Color.DKGRAY)
+        }
     }
 
     private fun moveCardView(slideOffset: Float) {
@@ -73,7 +79,7 @@ class GmailActivity : AppCompatActivity() {
             slideOffset in 0.1f..0.9f -> {
                 (resources.getDimensionPixelSize(R.dimen.card_margin_top) * (1 - slideOffset)).toInt()
             }
-            slideOffset > 0.9f -> {
+            slideOffset > 0.6f -> {
                 0
             }
             else -> {
