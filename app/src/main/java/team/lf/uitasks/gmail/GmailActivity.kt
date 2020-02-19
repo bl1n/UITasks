@@ -1,7 +1,6 @@
 package team.lf.uitasks.gmail
 
 import android.annotation.SuppressLint
-import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -53,6 +52,7 @@ class GmailActivity : AppCompatActivity() {
                 setButtonsVisibility(slideOffset)
                 moveCardView(slideOffset)
                 changeStatusBarColor(slideOffset)
+                changeCornerRadius(slideOffset)
             }
 
             @SuppressLint("SwitchIntDef")
@@ -65,6 +65,22 @@ class GmailActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun changeCornerRadius(slideOffset: Float) {
+
+        val radius = when(slideOffset){
+            in 0.90f..0.98f-> {
+                resources.getDimension(R.dimen.card_corner_radius)/2
+            }
+            in 0.98f..1f->{
+                0f
+            }
+            else -> {
+                resources.getDimension(R.dimen.card_corner_radius)
+            }
+        }
+        cardView.radius = radius
     }
 
     private fun changeStatusBarColor(slideOffset: Float) {
