@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.hdodenhof.circleimageview.CircleImageView
 import team.lf.uitasks.R
@@ -14,6 +17,8 @@ class GmailActivity : AppCompatActivity() {
 
     private lateinit var avatarImageView: CircleImageView
     private lateinit var hideableViewGroup: ViewGroup
+    private lateinit var cardView: CardView
+    private lateinit var bottomSheet: ConstraintLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,9 +28,10 @@ class GmailActivity : AppCompatActivity() {
 
         avatarImageView = findViewById(R.id.avatarImageView)
         hideableViewGroup = findViewById(R.id.hideble_view_group)
+        cardView = findViewById(R.id.cardView)
+        bottomSheet = findViewById(R.id.bottom_sheet)
 
         val shadowBox = findViewById<ViewGroup>(R.id.shadowBox)
-        val bottomSheet = findViewById<ViewGroup>(R.id.bottom_sheet)
         val sheetBehavior = BottomSheetBehavior.from(bottomSheet)
         sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
@@ -41,8 +47,7 @@ class GmailActivity : AppCompatActivity() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 changeImage(slideOffset)
                 setButtonsVisibility(slideOffset)
-
-
+                moveCardView(slideOffset)
             }
 
             @SuppressLint("SwitchIntDef")
@@ -51,11 +56,27 @@ class GmailActivity : AppCompatActivity() {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         shadowBox.visibility = View.GONE
                     }
-
                 }
             }
-
         })
+    }
+
+    private fun moveCardView(slideOffset: Float) {
+        val margin = when {
+            slideOffset in 0.1f .. 0.9f -> {
+                (resources.getDimensionPixelSize(R.dimen.card_margin_top)*(1-slideOffset)).toInt()
+            }
+            slideOffset > 0.9f -> {
+                0
+            }
+            else -> {
+                resources.getDimensionPixelSize(R.dimen.card_margin_top)
+            }
+        }
+        val set = ConstraintSet()
+        set.clone(bottomSheet)
+        set.connect(cardView.id, ConstraintSet.TOP, bottomSheet.id, ConstraintSet.TOP, margin)
+        set.applyTo(bottomSheet)
     }
 
     //todo change to alpha animation

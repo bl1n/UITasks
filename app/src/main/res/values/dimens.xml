@@ -7,4 +7,5 @@
     <dimen name="height">100dp</dimen>
     <dimen name="diameter">150dp</dimen>
     <dimen name="nav_bar_height">48dp</dimen>
+    <dimen name="card_margin_top">75dp</dimen>
 </resources>
