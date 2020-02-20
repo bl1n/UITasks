@@ -3,6 +3,7 @@ package team.lf.uitasks.gmail
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -53,6 +54,7 @@ class GmailActivity : AppCompatActivity() {
                 moveCardView(slideOffset)
                 changeStatusBarColor(slideOffset)
                 changeCornerRadius(slideOffset)
+                moveAvatar(slideOffset)
             }
 
             @SuppressLint("SwitchIntDef")
@@ -67,27 +69,34 @@ class GmailActivity : AppCompatActivity() {
         })
     }
 
-    private fun changeCornerRadius(slideOffset: Float) {
-
-        val radius = when(slideOffset){
-            in 0.90f..0.98f-> {
-                resources.getDimension(R.dimen.card_corner_radius)/2
-            }
-            in 0.98f..1f->{
-                0f
-            }
-            else -> {
-                resources.getDimension(R.dimen.card_corner_radius)
+    private fun moveAvatar(slideOffset: Float) {
+        var marginLeft = resources.getDimensionPixelSize(R.dimen.avatar_margins)
+        var marginRight = resources.getDimensionPixelSize(R.dimen.avatar_margins)
+        when (slideOffset) {
+            in 0.1f..1f -> {
+                marginLeft = (resources.getDimensionPixelSize(R.dimen.avatar_margins) * (1-slideOffset)).toInt()
+                marginRight += resources.getDimensionPixelSize(R.dimen.avatar_margins) - marginLeft
             }
         }
-        cardView.radius = radius
-    }
+        Log.d("TAG", "$marginLeft, $marginRight")
+        val set = ConstraintSet()
+        set.clone(bottomSheet)
+        set.connect(
+            avatarImageView.id,
+            ConstraintSet.START,
+            bottomSheet.id,
+            ConstraintSet.START,
+            marginLeft
+        )
+        set.connect(
+            avatarImageView.id,
+            ConstraintSet.END,
+            bottomSheet.id,
+            ConstraintSet.END,
+            marginRight
+        )
+        set.applyTo(bottomSheet)
 
-    private fun changeStatusBarColor(slideOffset: Float) {
-        when(slideOffset){
-            in 0.99f..1f-> setStatusBarColor(Color.WHITE)
-            else -> setStatusBarColor(Color.DKGRAY)
-        }
     }
 
     private fun moveCardView(slideOffset: Float) {
@@ -106,6 +115,29 @@ class GmailActivity : AppCompatActivity() {
         set.clone(bottomSheet)
         set.connect(cardView.id, ConstraintSet.TOP, bottomSheet.id, ConstraintSet.TOP, margin)
         set.applyTo(bottomSheet)
+    }
+
+    private fun changeCornerRadius(slideOffset: Float) {
+
+        val radius = when (slideOffset) {
+            in 0.90f..0.98f -> {
+                resources.getDimension(R.dimen.card_corner_radius) / 2
+            }
+            in 0.98f..1f -> {
+                0f
+            }
+            else -> {
+                resources.getDimension(R.dimen.card_corner_radius)
+            }
+        }
+        cardView.radius = radius
+    }
+
+    private fun changeStatusBarColor(slideOffset: Float) {
+        when (slideOffset) {
+            in 0.99f..1f -> setStatusBarColor(Color.WHITE)
+            else -> setStatusBarColor(Color.DKGRAY)
+        }
     }
 
     private fun setButtonsVisibility(slideOffset: Float) {
@@ -131,7 +163,7 @@ class GmailActivity : AppCompatActivity() {
 
     }
 
-    private fun setStatusBarColor(color:Int){
+    private fun setStatusBarColor(color: Int) {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.statusBarColor = color
