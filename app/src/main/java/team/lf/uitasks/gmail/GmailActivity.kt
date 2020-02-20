@@ -3,12 +3,12 @@ package team.lf.uitasks.gmail
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -22,6 +22,8 @@ class GmailActivity : AppCompatActivity() {
     private lateinit var hideableViewGroup: ViewGroup
     private lateinit var cardView: CardView
     private lateinit var bottomSheet: ConstraintLayout
+    private lateinit var googleStart: TextView
+    private lateinit var googleEnd: TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +35,9 @@ class GmailActivity : AppCompatActivity() {
         hideableViewGroup = findViewById(R.id.hideble_view_group)
         cardView = findViewById(R.id.cardView)
         bottomSheet = findViewById(R.id.bottom_sheet)
+        googleStart = findViewById(R.id.google_start)
+        googleEnd = findViewById(R.id.google_end)
+
 
         val shadowBox = findViewById<ViewGroup>(R.id.shadowBox)
         val sheetBehavior = BottomSheetBehavior.from(bottomSheet)
@@ -55,6 +60,7 @@ class GmailActivity : AppCompatActivity() {
                 changeStatusBarColor(slideOffset)
                 changeCornerRadius(slideOffset)
                 moveAvatar(slideOffset)
+                setGoogleVisibility(slideOffset)
             }
 
             @SuppressLint("SwitchIntDef")
@@ -69,16 +75,24 @@ class GmailActivity : AppCompatActivity() {
         })
     }
 
+    private fun setGoogleVisibility(slideOffset: Float) {
+        if(slideOffset  in 0.98f..1f){
+            googleEnd.alpha = slideOffset
+        } else{
+            googleEnd.alpha = 0f
+        }
+    }
+
     private fun moveAvatar(slideOffset: Float) {
         var marginLeft = resources.getDimensionPixelSize(R.dimen.avatar_margins)
         var marginRight = resources.getDimensionPixelSize(R.dimen.avatar_margins)
         when (slideOffset) {
             in 0.1f..1f -> {
-                marginLeft = (resources.getDimensionPixelSize(R.dimen.avatar_margins) * (1-slideOffset)).toInt()
+                marginLeft =
+                    (resources.getDimensionPixelSize(R.dimen.avatar_margins) * (1 - slideOffset)).toInt()
                 marginRight += resources.getDimensionPixelSize(R.dimen.avatar_margins) - marginLeft
             }
         }
-        Log.d("TAG", "$marginLeft, $marginRight")
         val set = ConstraintSet()
         set.clone(bottomSheet)
         set.connect(
@@ -141,11 +155,12 @@ class GmailActivity : AppCompatActivity() {
     }
 
     private fun setButtonsVisibility(slideOffset: Float) {
-        if (slideOffset >= 0.5) {
-            hideableViewGroup.visibility = View.GONE
+        if (slideOffset in 0.001f..1f) {
+            googleStart.alpha = 0.5f - slideOffset
+            hideableViewGroup.alpha = 0.5f - slideOffset
         } else {
-            hideableViewGroup.visibility = View.VISIBLE
-
+            googleStart.alpha = 1f
+            hideableViewGroup.alpha = 1f
         }
     }
 
