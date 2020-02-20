@@ -24,6 +24,7 @@ class GmailActivity : AppCompatActivity() {
     private lateinit var bottomSheet: ConstraintLayout
     private lateinit var googleStart: TextView
     private lateinit var googleEnd: TextView
+    private lateinit var fakeToolbar: View
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +38,7 @@ class GmailActivity : AppCompatActivity() {
         bottomSheet = findViewById(R.id.bottom_sheet)
         googleStart = findViewById(R.id.google_start)
         googleEnd = findViewById(R.id.google_end)
+        fakeToolbar = findViewById(R.id.fake_toolbar)
 
 
         val shadowBox = findViewById<ViewGroup>(R.id.shadowBox)
@@ -61,6 +63,7 @@ class GmailActivity : AppCompatActivity() {
                 changeCornerRadius(slideOffset)
                 moveAvatar(slideOffset)
                 setGoogleVisibility(slideOffset)
+                setToolbar(slideOffset)
             }
 
             @SuppressLint("SwitchIntDef")
@@ -75,10 +78,18 @@ class GmailActivity : AppCompatActivity() {
         })
     }
 
+    private fun setToolbar(slideOffset: Float) {
+        if (slideOffset == 1f) {
+            fakeToolbar.alpha = 0.9f
+        } else {
+            fakeToolbar.alpha = 0f
+        }
+    }
+
     private fun setGoogleVisibility(slideOffset: Float) {
-        if(slideOffset  in 0.98f..1f){
+        if (slideOffset in 0.9f..1f) {
             googleEnd.alpha = slideOffset
-        } else{
+        } else {
             googleEnd.alpha = 0f
         }
     }
