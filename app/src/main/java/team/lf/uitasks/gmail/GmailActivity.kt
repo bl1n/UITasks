@@ -23,9 +23,11 @@ class GmailActivity : AppCompatActivity() {
     private lateinit var hideableViewGroup: ViewGroup
     private lateinit var cardView: CardView
     private lateinit var bottomSheet: ConstraintLayout
+    private lateinit var cardConctraitLayout: ConstraintLayout
     private lateinit var googleStart: TextView
     private lateinit var googleEnd: TextView
     private lateinit var fakeToolbar: View
+    private lateinit var loremTv: TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +42,8 @@ class GmailActivity : AppCompatActivity() {
         googleStart = findViewById(R.id.google_start)
         googleEnd = findViewById(R.id.google_end)
         fakeToolbar = findViewById(R.id.fake_toolbar)
+        loremTv = findViewById(R.id.lorem_tv)
+        cardConctraitLayout = findViewById(R.id.card_constrait_layout)
 
 
         val shadowBox = findViewById<ViewGroup>(R.id.shadowBox)
@@ -66,6 +70,7 @@ class GmailActivity : AppCompatActivity() {
                 moveAvatar(slideOffset)
                 setGoogleVisibility(slideOffset)
                 setToolbar(slideOffset)
+                moveLorem(slideOffset)
             }
 
             @SuppressLint("SwitchIntDef")
@@ -80,12 +85,56 @@ class GmailActivity : AppCompatActivity() {
         })
     }
 
+    private fun moveLorem(slideOffset: Float) {
+        val margin = when {
+            slideOffset in 0.1f..0.9f -> {
+                (resources.getDimensionPixelSize(R.dimen.lorem_margin) * (1 - slideOffset)).toInt()
+            }
+            slideOffset > 0.6f -> {
+                0
+            }
+            else -> {
+                resources.getDimensionPixelSize(R.dimen.lorem_margin)
+            }
+        }
+        val set = ConstraintSet()
+        set.clone(cardConctraitLayout)
+        set.connect(
+            loremTv.id,
+            ConstraintSet.TOP,
+            cardConctraitLayout.id,
+            ConstraintSet.TOP,
+            margin + resources.getDimensionPixelSize(R.dimen.card_margin_top) + +resources.getDimensionPixelSize(
+                R.dimen.end_lorem_margin
+            )
+        )
+        set.applyTo(cardConctraitLayout)
+    }
+
+    private fun moveCardView(slideOffset: Float) {
+        val margin = when {
+            slideOffset in 0.1f..0.9f -> {
+                (resources.getDimensionPixelSize(R.dimen.card_margin_top) * (1 - slideOffset)).toInt()
+            }
+            slideOffset > 0.6f -> {
+                0
+            }
+            else -> {
+                resources.getDimensionPixelSize(R.dimen.card_margin_top)
+            }
+        }
+        val set = ConstraintSet()
+        set.clone(bottomSheet)
+        set.connect(cardView.id, ConstraintSet.TOP, bottomSheet.id, ConstraintSet.TOP, margin)
+        set.applyTo(bottomSheet)
+    }
+
     private fun setStatusBarIconColor(slideOffset: Float) {
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val decor = window.decorView
-            if(slideOffset in 0.99f..1f){
+            if (slideOffset in 0.99f..1f) {
                 decor.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            } else{
+            } else {
                 decor.systemUiVisibility = 0
             }
         }
@@ -135,24 +184,6 @@ class GmailActivity : AppCompatActivity() {
         )
         set.applyTo(bottomSheet)
 
-    }
-
-    private fun moveCardView(slideOffset: Float) {
-        val margin = when {
-            slideOffset in 0.1f..0.9f -> {
-                (resources.getDimensionPixelSize(R.dimen.card_margin_top) * (1 - slideOffset)).toInt()
-            }
-            slideOffset > 0.6f -> {
-                0
-            }
-            else -> {
-                resources.getDimensionPixelSize(R.dimen.card_margin_top)
-            }
-        }
-        val set = ConstraintSet()
-        set.clone(bottomSheet)
-        set.connect(cardView.id, ConstraintSet.TOP, bottomSheet.id, ConstraintSet.TOP, margin)
-        set.applyTo(bottomSheet)
     }
 
     private fun changeCornerRadius(slideOffset: Float) {

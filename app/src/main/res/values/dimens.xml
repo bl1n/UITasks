@@ -10,4 +10,6 @@
     <dimen name="card_margin_top">65dp</dimen>
     <dimen name="card_corner_radius">16dp</dimen>
     <dimen name="avatar_margins">130dp</dimen>
+    <dimen name="lorem_margin">130dp</dimen>
+    <dimen name="end_lorem_margin">16dp</dimen>
 </resources>
