@@ -2,6 +2,7 @@ package team.lf.uitasks.gmail
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -60,6 +61,7 @@ class GmailActivity : AppCompatActivity() {
                 setButtonsVisibility(slideOffset)
                 moveCardView(slideOffset)
                 changeStatusBarColor(slideOffset)
+                setStatusBarIconColor(slideOffset)
                 changeCornerRadius(slideOffset)
                 moveAvatar(slideOffset)
                 setGoogleVisibility(slideOffset)
@@ -76,6 +78,17 @@ class GmailActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun setStatusBarIconColor(slideOffset: Float) {
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            val decor = window.decorView
+            if(slideOffset in 0.99f..1f){
+                decor.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            } else{
+                decor.systemUiVisibility = 0
+            }
+        }
     }
 
     private fun setToolbar(slideOffset: Float) {

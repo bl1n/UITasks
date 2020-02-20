@@ -16,7 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".gmail.GmailActivity"/>
+        <activity android:name=".gmail.GmailActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
