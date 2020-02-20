@@ -25,7 +25,7 @@ class GmailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.Theme_MaterialComponents_Light_NoActionBar)
+        setTheme(R.style.Theme_AppCompat_Light_NoActionBar)
         setContentView(R.layout.activity_gmail)
 
         avatarImageView = findViewById(R.id.avatarImageView)
@@ -60,7 +60,7 @@ class GmailActivity : AppCompatActivity() {
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         shadowBox.visibility = View.GONE
-                        window.statusBarColor = Color.BLUE //todo look for right color
+                        window.statusBarColor = Color.GRAY
                     }
                 }
             }
