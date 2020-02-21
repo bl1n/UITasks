@@ -34,8 +34,9 @@ class GmailV2Activity : AppCompatActivity() {
 
         val shadowBox = findViewById<ViewGroup>(R.id.shadowBox)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar_gmailv2)
         setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         initRecycler()
 
