@@ -49,4 +49,15 @@
         app:layout_constraintStart_toStartOf="@+id/buttonBubbles"
         app:layout_constraintTop_toBottomOf="@+id/buttonBubbles" />
 
+    <Button
+        android:id="@+id/buttonGmailV2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/GmailV2"
+        app:layout_constraintEnd_toEndOf="@+id/buttonGmail"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/buttonGmail"
+        app:layout_constraintTop_toBottomOf="@+id/buttonGmail" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,7 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import team.lf.uitasks.bubbles.SurfaceViewBubblesFragment
 import team.lf.uitasks.gmail.GmailActivity
+import team.lf.uitasks.gmail.GmailV2Activity
 import team.lf.uitasks.paint.PaintFragment
 import team.lf.uitasks.swipe.SwipeFragment
 
@@ -46,6 +47,9 @@ class ChooseFragment :Fragment(){
         }
         view.findViewById<Button>(R.id.buttonGmail).setOnClickListener {
             startActivity(Intent(requireActivity(), GmailActivity::class.java))
+        }
+        view.findViewById<Button>(R.id.buttonGmailV2).setOnClickListener {
+            startActivity(Intent(requireActivity(), GmailV2Activity::class.java))
         }
 
     }
