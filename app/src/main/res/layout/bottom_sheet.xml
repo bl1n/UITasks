@@ -9,7 +9,8 @@
     android:fitsSystemWindows="true"
     app:behavior_hideable="true"
     app:behavior_peekHeight="550dp"
-    app:layout_behavior="@string/bottom_sheet_behavior">
+    app:layout_behavior="@string/bottom_sheet_behavior"
+    >
 
     <ImageView
         android:id="@+id/avatarImageView"

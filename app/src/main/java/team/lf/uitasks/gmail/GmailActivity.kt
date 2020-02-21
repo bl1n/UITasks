@@ -32,7 +32,6 @@ class GmailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.Theme_AppCompat_Light_NoActionBar)
         setContentView(R.layout.activity_gmail)
 
         avatarImageView = findViewById(R.id.avatarImageView)
@@ -45,8 +44,8 @@ class GmailActivity : AppCompatActivity() {
         loremTv = findViewById(R.id.lorem_tv)
         cardConctraitLayout = findViewById(R.id.card_constrait_layout)
 
-
         val shadowBox = findViewById<ViewGroup>(R.id.shadowBox)
+
         val sheetBehavior = BottomSheetBehavior.from(bottomSheet)
         sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
@@ -78,7 +77,11 @@ class GmailActivity : AppCompatActivity() {
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         shadowBox.visibility = View.GONE
-                        window.statusBarColor = Color.GRAY
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            window.statusBarColor = resources.getColor(R.color.colorPrimaryDark, null)
+                        } else
+                            window.statusBarColor = resources.getColor(R.color.colorPrimaryDark)
+
                     }
                 }
             }

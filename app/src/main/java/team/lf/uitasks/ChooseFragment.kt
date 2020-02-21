@@ -13,7 +13,7 @@ import team.lf.uitasks.gmail.GmailV2Activity
 import team.lf.uitasks.paint.PaintFragment
 import team.lf.uitasks.swipe.SwipeFragment
 
-class ChooseFragment :Fragment(){
+class ChooseFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -22,7 +22,7 @@ class ChooseFragment :Fragment(){
     ): View? {
         val view = inflater.inflate(R.layout.fragment_choose, container, false)
         setButtons(view)
-        return  view
+        return view
     }
 
     private fun setButtons(view: View) {
@@ -53,6 +53,7 @@ class ChooseFragment :Fragment(){
         }
 
     }
+
     companion object {
         // TODO: Customize parameter initialization
         @JvmStatic

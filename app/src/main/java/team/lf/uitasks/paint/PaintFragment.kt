@@ -8,7 +8,7 @@ import team.lf.uitasks.R
 
 class PaintFragment : Fragment() {
 
-    lateinit var paintWithPaletteView: PaintWithPaletteView
+    private lateinit var paintWithPaletteView: PaintWithPaletteView
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

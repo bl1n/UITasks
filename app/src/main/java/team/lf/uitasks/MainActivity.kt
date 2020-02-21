@@ -1,15 +1,16 @@
 package team.lf.uitasks
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import team.lf.uitasks.swipe.SwipeFragment
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val toolbar = findViewById<Toolbar>(R.id.main_toolbar)
+        setSupportActionBar(toolbar)
         supportFragmentManager.beginTransaction().replace(R.id.container, ChooseFragment.newInstance()).commit()
     }
 
