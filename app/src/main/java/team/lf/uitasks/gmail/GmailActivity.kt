@@ -131,6 +131,7 @@ class GmailActivity : AppCompatActivity() {
         set.clone(bottomSheet)
         set.connect(cardView.id, ConstraintSet.TOP, bottomSheet.id, ConstraintSet.TOP, margin)
         set.applyTo(bottomSheet)
+
     }
 
     private fun setStatusBarIconColor(slideOffset: Float) {
@@ -182,9 +183,6 @@ class GmailActivity : AppCompatActivity() {
     private fun changeCornerRadius(slideOffset: Float) {
 
         val radius = when (slideOffset) {
-            in 0.90f..0.98f -> {
-                resources.getDimension(R.dimen.card_corner_radius) / 2
-            }
             in 0.98f..1f -> {
                 0f
             }
