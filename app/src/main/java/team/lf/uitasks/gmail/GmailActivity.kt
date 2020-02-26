@@ -162,31 +162,17 @@ class GmailActivity : AppCompatActivity() {
     private fun moveAvatar(slideOffset: Float) {
         var marginLeft = resources.getDimensionPixelSize(R.dimen.avatar_margins)
         var marginRight = resources.getDimensionPixelSize(R.dimen.avatar_margins)
-        when (slideOffset) {
-            in 0.1f..1f -> {
-                marginLeft =
-                    (resources.getDimensionPixelSize(R.dimen.avatar_margins) * (1 - slideOffset)).toInt()
-                marginRight += resources.getDimensionPixelSize(R.dimen.avatar_margins) - marginLeft
+        val bias = when (slideOffset) {
+            in 0.5f..1f -> {
+                0.5f - (-0.5f + slideOffset)
             }
+            else -> 0.5f
+
         }
         val set = ConstraintSet()
         set.clone(bottomSheet)
-        set.connect(
-            avatarImageView.id,
-            ConstraintSet.START,
-            bottomSheet.id,
-            ConstraintSet.START,
-            marginLeft
-        )
-        set.connect(
-            avatarImageView.id,
-            ConstraintSet.END,
-            bottomSheet.id,
-            ConstraintSet.END,
-            marginRight
-        )
+        set.setHorizontalBias(avatarImageView.id, bias)
         set.applyTo(bottomSheet)
-
     }
 
     private fun changeCornerRadius(slideOffset: Float) {

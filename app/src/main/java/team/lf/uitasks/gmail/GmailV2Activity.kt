@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -15,6 +16,8 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.TransitionManager
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import team.lf.uitasks.R
 import team.lf.uitasks.swipe.SwipeAdapter
@@ -25,12 +28,15 @@ class GmailV2Activity : AppCompatActivity() {
 
     private lateinit var bottomSheetV2: CoordinatorLayout
 
-    private lateinit var swipeAdapter:SwipeAdapter
+    private lateinit var swipeAdapter: SwipeAdapter
+
+    private lateinit var appBarLayout: AppBarLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gmail_v2)
-        bottomSheetV2 =findViewById(R.id.bottom_sheet_v2)
+        bottomSheetV2 = findViewById(R.id.bottom_sheet_v2)
+        appBarLayout = findViewById(R.id.appbar)
 
         val shadowBox = findViewById<ViewGroup>(R.id.shadowBox)
 
@@ -40,9 +46,13 @@ class GmailV2Activity : AppCompatActivity() {
 
         initRecycler()
 
-        val sheetBehavior = BottomSheetBehavior.from(bottomSheetV2)
-        sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset: Int ->
+                Log.d("TAG", "$verticalOffset")
+            })
+        }
 
+        val sheetBehavior = BottomSheetBehavior.from(bottomSheetV2)
         findViewById<Button>(R.id.bottom_sheet_button)
             .setOnClickListener {
                 if (sheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
@@ -51,6 +61,7 @@ class GmailV2Activity : AppCompatActivity() {
                     shadowBox.visibility = View.VISIBLE
                 }
             }
+        sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         sheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
@@ -63,13 +74,18 @@ class GmailV2Activity : AppCompatActivity() {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         shadowBox.visibility = View.GONE
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            window.statusBarColor = resources.getColor(R.color.colorPrimaryDark, null)
+                            window.statusBarColor =
+                                resources.getColor(R.color.colorPrimaryDark, null)
                         } else
                             window.statusBarColor = resources.getColor(R.color.colorPrimaryDark)
                     }
                 }
             }
         })
+
+        findViewById<Button>(R.id.buttonAppbar).setOnClickListener {
+            appBarLayout.setExpanded(false)
+        }
     }
 
     private fun initRecycler() {

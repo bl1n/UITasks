@@ -48,9 +48,9 @@ class ChooseFragment : Fragment() {
         view.findViewById<Button>(R.id.buttonGmail).setOnClickListener {
             startActivity(Intent(requireActivity(), GmailActivity::class.java))
         }
-        view.findViewById<Button>(R.id.buttonGmailV2).setOnClickListener {
-            startActivity(Intent(requireActivity(), GmailV2Activity::class.java))
-        }
+//        view.findViewById<Button>(R.id.buttonGmailV2).setOnClickListener {
+//            startActivity(Intent(requireActivity(), GmailV2Activity::class.java))
+//        }
 
     }
 
