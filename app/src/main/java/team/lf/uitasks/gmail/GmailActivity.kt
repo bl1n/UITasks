@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -28,6 +29,8 @@ class GmailActivity : AppCompatActivity() {
     private lateinit var googleEnd: TextView
     private lateinit var fakeToolbar: View
     private lateinit var loremTv: TextView
+
+    private var previousOffset = 0f
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,7 +81,8 @@ class GmailActivity : AppCompatActivity() {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         shadowBox.visibility = View.GONE
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            window.statusBarColor = resources.getColor(R.color.colorPrimaryDark, null)
+                            window.statusBarColor =
+                                resources.getColor(R.color.colorPrimaryDark, null)
                         } else
                             window.statusBarColor = resources.getColor(R.color.colorPrimaryDark)
 
@@ -152,11 +156,16 @@ class GmailActivity : AppCompatActivity() {
     }
 
     private fun setGoogleVisibility(slideOffset: Float) {
+
         if (slideOffset in 0.9f..1f) {
-            googleEnd.alpha = slideOffset
+            googleEnd.alpha = 0.3f + ((slideOffset * 10) % (0.9f * 10)) / 5
         } else {
             googleEnd.alpha = 0f
         }
+        if(slideOffset == 1f){
+            googleEnd.alpha = 1f
+        }
+        Log.d("TAG", "${googleEnd.alpha}")
     }
 
     private fun moveAvatar(slideOffset: Float) {
