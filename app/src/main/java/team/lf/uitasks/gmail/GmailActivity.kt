@@ -30,9 +30,6 @@ class GmailActivity : AppCompatActivity() {
     private lateinit var fakeToolbar: View
     private lateinit var loremTv: TextView
 
-    private var previousOffset = 0f
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gmail)
@@ -158,7 +155,7 @@ class GmailActivity : AppCompatActivity() {
     private fun setGoogleVisibility(slideOffset: Float) {
 
         if (slideOffset in 0.9f..1f) {
-            googleEnd.alpha = 0.3f + ((slideOffset * 10) % (0.9f * 10)) / 5
+            googleEnd.alpha = 0.3f + (slideOffset% 0.9f) / 5
         } else {
             googleEnd.alpha = 0f
         }
@@ -169,8 +166,6 @@ class GmailActivity : AppCompatActivity() {
     }
 
     private fun moveAvatar(slideOffset: Float) {
-        var marginLeft = resources.getDimensionPixelSize(R.dimen.avatar_margins)
-        var marginRight = resources.getDimensionPixelSize(R.dimen.avatar_margins)
         val bias = when (slideOffset) {
             in 0.5f..1f -> {
                 0.5f - (-0.5f + slideOffset)
