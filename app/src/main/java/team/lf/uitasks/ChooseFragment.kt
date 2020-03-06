@@ -32,7 +32,6 @@ class ChooseFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
-
         view.findViewById<Button>(R.id.buttonPaint).setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.container, PaintFragment.newInstance())
@@ -48,10 +47,9 @@ class ChooseFragment : Fragment() {
         view.findViewById<Button>(R.id.buttonGmail).setOnClickListener {
             startActivity(Intent(requireActivity(), GmailActivity::class.java))
         }
-//        view.findViewById<Button>(R.id.buttonGmailV2).setOnClickListener {
-//            startActivity(Intent(requireActivity(), GmailV2Activity::class.java))
-//        }
-
+        view.findViewById<Button>(R.id.buttonGmailv2).setOnClickListener {
+            startActivity(Intent(requireActivity(), GmailV2Activity::class.java))
+        }
     }
 
     companion object {
