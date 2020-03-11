@@ -12,4 +12,6 @@
     <dimen name="avatar_margins">130dp</dimen>
     <dimen name="lorem_margin">130dp</dimen>
     <dimen name="end_lorem_margin">16dp</dimen>
+
+    <dimen name="min_avatar_diametr">50dp</dimen>
 </resources>

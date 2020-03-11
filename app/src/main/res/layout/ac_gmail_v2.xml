@@ -5,64 +5,58 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 
 
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
         <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
 
     </androidx.core.widget.NestedScrollView>
 
     <ImageView
-        app:layout_behavior=".gmail.AvatarBehavior"
-        android:elevation="5dp"
-        app:layout_anchorGravity="center"
+
         app:layout_anchor="@id/appbar"
+        android:id="@+id/avatar_view"
         android:layout_width="@dimen/diameter"
         android:layout_height="@dimen/diameter"
-        android:src="@drawable/ic_brightness_1_black_24dp"/>
-    <com.google.android.material.card.MaterialCardView
-        style="@style/CustomCardViewStyle"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:translationY="-100dp"
-        android:fitsSystemWindows="true"
-        app:layout_anchor="@id/appbar"
-        app:layout_anchorGravity="bottom">
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"/>
-    </com.google.android.material.card.MaterialCardView>
+        android:elevation="5dp"
+        android:src="@drawable/ic_brightness_1_black_24dp"
+        app:layout_anchorGravity="center_vertical|center_horizontal"
+        app:layout_behavior=".gmail.AvatarBehavior"/>
+
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
-        android:layout_height="300dp"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="300dp">
+
+
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
+
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:toolbarId="@+id/toolbar"
-            android:background="@android:color/white"
+            android:background="@android:color/transparent"
+            app:contentScrim="@android:color/white"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:statusBarScrim="@android:color/white"
-            app:contentScrim="@android:color/white">
+            app:toolbarId="@+id/toolbar">
+
 
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_width="match_parent"></androidx.appcompat.widget.Toolbar>
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"></androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
-
-
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
